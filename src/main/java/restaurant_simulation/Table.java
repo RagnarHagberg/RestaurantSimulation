@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Table {
+public class Table implements WaiterPublisher{
 
 
     //TODO
@@ -30,7 +30,7 @@ public class Table {
     private Menu currentMenu;
 
 
-    public List<Listener> listeners = new ArrayList<>();
+    public List<WaiterListener> waiterListeners = new ArrayList<>();
 
     Table(int tableNumber){
         this.tableNumber = tableNumber;
@@ -60,17 +60,20 @@ public class Table {
 
     public int getTableNumber(){return tableNumber;}
 
-    public void addListener(Listener newListener){
-        listeners.add(newListener);
+    @Override
+    public void addListener(WaiterListener newWaiterListener){
+        waiterListeners.add(newWaiterListener);
     }
 
-    public void removeListener(Listener listener){
-        listeners.remove(listener);
+    @Override
+    public void removeListener(WaiterListener waiterListener){
+        waiterListeners.remove(waiterListener);
     }
 
+    @Override
     public void notifyListeners(WaiterInstruction instruction){
-        for(Listener listener : listeners){
-            listener.receiveNotification(instruction);
+        for(WaiterListener waiterListener : waiterListeners){
+            waiterListener.receiveNotification(instruction);
         }
     }
 
@@ -80,13 +83,13 @@ public class Table {
         if (elapsedTime > 5000 && !hasSentMenuNotification){ // check to time after customer arrives
             if (currentMenu == null){
                 hasSentMenuNotification = true;
-                notifyListeners(new WaiterInstruction(WaiterInstruction.Action.REQUESTMENU, getTableNumber()));
+                notifyListeners(new WaiterInstruction(Enums.WaiterAction.REQUESTMENU, getTableNumber()));
             }
         }
 
         if (elapsedTime > timeForOrder){
             if (!hasOrdered){
-                notifyListeners(new WaiterInstruction(WaiterInstruction.Action.REQUESTTOORDER, getTableNumber()));
+                notifyListeners(new WaiterInstruction(Enums.WaiterAction.REQUESTTOORDER, getTableNumber()));
                 hasOrdered = true;
             }
 
@@ -101,12 +104,15 @@ public class Table {
     }
 
 
-    public ArrayList<MenuItem> makeRandomOrder(){
+    public Order makeRandomOrder(){
         ArrayList<MenuItem> orderList = new ArrayList<>();
+
         for (int i = 0; i < amountOfGuests; i++) {
             orderList.add(currentMenu.selectRandomItem());
         }
 
-        return orderList;
+        Order order = new Order(orderList, getTableNumber());
+
+        return order;
     }
 }

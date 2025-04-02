@@ -32,16 +32,13 @@ public class RestaurantMain extends JPanel {
             waiters.add(waiter);
         }
 
-
-
-
         // Assign waiter to tables
         for (Table t : tables){
             t.addListener(waiters.get(0)); // All tables are assigned waiter No. 0
         }
 
-        ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>(Arrays.asList(new MenuItem("Fish fingers", 10),
-                new MenuItem("Meatballs", 5), new MenuItem("Bouef Bourgoignon", 12)));
+        ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>(Arrays.asList(new MenuItem("Fish fingers", 10, Enums.TargetChef.SOUS),
+                new MenuItem("Meatballs", 5, Enums.TargetChef.SOUS), new MenuItem("Bouef Bourgoignon", 12, Enums.TargetChef.SOUS)));
         Menu menu1 = new Menu(menuItems);
         waiters.getFirst().setCurrentMenu(menu1);
     }

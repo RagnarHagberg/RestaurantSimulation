@@ -1,25 +1,30 @@
 package restaurant_simulation;
 
 public class WaiterInstruction {
-    enum Action{
-        REQUESTMENU,
-        REQUESTTOORDER
+
+
+    private Enums.WaiterAction action;
+    private int tableNumber;
+    private Dish dish;
+
+    WaiterInstruction(Enums.WaiterAction action, int tableNumber, Dish dish){
+        this.action = action;
+        this.tableNumber = tableNumber;
+        this.dish = dish;
     }
 
-    private Action action;
-    private int tableNumber;
-
-
-    WaiterInstruction(Action action, int tableNumber){
+    WaiterInstruction(Enums.WaiterAction action, int tableNumber){
         this.action = action;
         this.tableNumber = tableNumber;
     }
 
-    public int getTableNumber() {
+    int getTableNumber() {
         return tableNumber;
     }
 
-    public Action getAction() {
+    Enums.WaiterAction getAction() {
         return action;
     }
+
+    Dish getDish() {return dish;}
 }

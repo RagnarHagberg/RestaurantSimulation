@@ -1,5 +1,5 @@
 package restaurant_simulation;
 
-public interface Listener {
+public interface WaiterListener {
     public void receiveNotification(WaiterInstruction instruction);
 }

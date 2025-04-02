@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * @author Ragnar Hagberg
  */
 
-public class Waiter implements Listener{
+public class Waiter implements WaiterListener {
     /** Represents the index of the waiter in relation to the other waiters created by the controller
     */
     private int waiterIndex;
@@ -52,7 +52,7 @@ public class Waiter implements Listener{
     private Target currentTarget;
 
     /** Text describing the waiter's current action and target, for the visual representation*/
-    private String actionText = "Action: " + "No action. Target: No target";;
+    private String actionText = "WaiterAction: " + "No action. Target: No target";;
 
     /** Flag indicating whether the waiter is currently at a table */
     private boolean isAtTable = false;
@@ -75,7 +75,7 @@ public class Waiter implements Listener{
     private Menu currentMenu;
 
     /** List of menu items in the current order being handled */
-    private ArrayList<MenuItem> orderList = new ArrayList<>();
+    private Order currentOrder;
 
     /**
      * Constructs a new Waiter with the specified index.
@@ -92,47 +92,22 @@ public class Waiter implements Listener{
         setY(spawnY);
     }
 
-    /**
-     * Sets the reference to the head chef.
-     *
-     * @param chef The head chef object
-     */
     public void setChef(HeadChef chef) {
         this.chef = chef;
     }
 
-    /**
-     * Sets the current menu for the waiter.
-     *
-     * @param currentMenu The to be current menu
-     */
     public void setCurrentMenu(Menu currentMenu) {
         this.currentMenu = currentMenu;
     }
 
-    /**
-     * Sets the list of tables in the restaurant.
-     *
-     * @param tables ArrayList containing all tables
-     */
     public void setTables(ArrayList<Table> tables) {
         this.tables = tables;
     }
 
-    /**
-     * Gets the list of tables in the restaurant.
-     *
-     * @return ArrayList containing all tables
-     */
     public ArrayList<Table> getTables() {
         return tables;
     }
 
-    /**
-     * Gets the text describing the waiter's current action and target.
-     *
-     * @return String containing action and target text
-     */
     public String getActionText() {
         return actionText;
     }
@@ -150,10 +125,10 @@ public class Waiter implements Listener{
 
         String actionString;
         if (currentInstruction != null){
-            actionString = "Action: " + currentInstruction.getAction() + ". ";
+            actionString = "WaiterAction: " + currentInstruction.getAction() + ". ";
         }
         else{
-            actionString = "Action: " + "No action. ";
+            actionString = "WaiterAction: " + "No action. ";
 
         }
 
@@ -226,7 +201,7 @@ public class Waiter implements Listener{
 
         switch (currentInstruction.getAction()){
             case REQUESTTOORDER:
-                chef.addOrder(orderList);
+                chef.addOrder(currentOrder);
                 finishCurrentInstruction();
         }
     }
@@ -256,7 +231,6 @@ public class Waiter implements Listener{
                 setTarget(Target.CHEF, chef.getX(), chef.getY());
                 isAtTable = false;
                 break;
-
         }
     }
 
@@ -266,7 +240,7 @@ public class Waiter implements Listener{
      * @param table The table to take an order from
      */
     private void takeOrder(Table table){
-        orderList = table.makeRandomOrder();
+        currentOrder = table.makeRandomOrder();
         // orderList.forEach(menuItem -> System.out.println(menuItem.courseName));
     }
 
@@ -289,7 +263,6 @@ public class Waiter implements Listener{
             targetX = 0;
             targetY = 0;
         }
-
     }
 
     /**
@@ -328,7 +301,7 @@ public class Waiter implements Listener{
         int yDirectionToTarget;
 
         if (targetX < x) {
-            xDirectionToTarget = -1;
+            xDirectionToTarget = -1;   //xDirectionToTarget = targetX < x: 1 ? -1;
         }else{
             xDirectionToTarget = 1;
         }
@@ -400,6 +373,9 @@ public class Waiter implements Listener{
             case REQUESTTOORDER:
                 setTargetToTable(currentInstruction.getTableNumber());
                 break;
+
+            case DELIVERDISH:
+                currentInstruction.getDish();
         }
 
     }
