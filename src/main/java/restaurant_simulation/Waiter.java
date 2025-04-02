@@ -77,6 +77,8 @@ public class Waiter implements WaiterListener {
     /** List of menu items in the current order being handled */
     private Order currentOrder;
 
+    private boolean hasWalkedToMiddle = false;
+
     /**
      * Constructs a new Waiter with the specified index.
      * Sets the spawn position based on the waiter index.
@@ -253,6 +255,7 @@ public class Waiter implements WaiterListener {
      */
     private void setTarget(Target target, int x, int y) {
         this.currentTarget = target;
+        hasWalkedToMiddle = false;
         updateActionText();
 
         if (currentTarget != null){
@@ -312,10 +315,22 @@ public class Waiter implements WaiterListener {
             yDirectionToTarget = 1;
         }
 
+
+        int yDirectionToMiddle = (y < 320) ? 1 : -1;
+
+        if (Math.abs(y-320) > 25 && !hasWalkedToMiddle){
+            setY(y + 5 * yDirectionToMiddle);
+            return;
+        }
+        else{
+            hasWalkedToMiddle = true;
+        }
+
         // first walk the x direction
         if (Math.abs(x-targetX) > 50){
             setX(x + 5 * xDirectionToTarget);
         }
+        // then walk in the y direction
         else if (Math.abs(y-targetY) > 50){
             setY(y + 5 * yDirectionToTarget);
             // walk y
