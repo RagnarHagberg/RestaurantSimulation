@@ -1,7 +1,7 @@
 package restaurant_simulation;
 
 public class Enums {
-    enum TargetChef{
+    enum ChefType {
         SOUS,
         GARDEMANGER,
         PREP,

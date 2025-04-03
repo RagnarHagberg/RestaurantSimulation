@@ -14,9 +14,19 @@ public class HeadChef implements WaiterPublisher, HeadChefListener{
 
     private ArrayList<Order> orders = new ArrayList<>();
 
-    HeadChef(int x, int y){
+    private Chef prepChef;
+    private Chef sousChef;
+    private Chef pastryChef;
+    private Chef gardemangerChef;
+
+    HeadChef(int x, int y, Chef prepChef, Chef sousChef, Chef pastryChef, Chef gardemangerChef){
          this.x = x;
          this.y = y;
+
+         this.prepChef = prepChef;
+         this.sousChef = sousChef;
+         this.pastryChef = pastryChef;
+         this.gardemangerChef = gardemangerChef;
     }
 
     public int getDiameter() {
@@ -40,17 +50,22 @@ public class HeadChef implements WaiterPublisher, HeadChefListener{
         Order currentOrder = orders.getFirst();
         for (MenuItem menuItem : currentOrder.getDishes()){
             Dish currentDish = new Dish(menuItem.courseName, currentOrder.getTableOriginIndex());
-            switch (menuItem.targetChef){
+            switch (menuItem.getTargetChef()){
                 case PREP:
-                    //Prep.addDish(currentDish)
+                    prepChef.addDish(currentDish);
+                    break;
                 case SOUS:
-                    //Sous.addDish(currentDish)
+                    sousChef.addDish(currentDish);
+                    break;
                 case GARDEMANGER:
-                    //Gardemanger.addDish(currentDish)
+                    gardemangerChef.addDish(currentDish);
+                    break;
                 case PASTRY:
-                    //Pastry.AddDish(currentDish)
+                    pastryChef.addDish(currentDish);
+                    break;
             }
         }
+
         orders.remove(currentOrder);
         if (!orders.isEmpty()){
             instructChefs();
@@ -63,7 +78,6 @@ public class HeadChef implements WaiterPublisher, HeadChefListener{
             instructChefs();
         }
     }
-
 
     @Override
     public void addListener(WaiterListener newWaiterListener) {
@@ -78,13 +92,22 @@ public class HeadChef implements WaiterPublisher, HeadChefListener{
     @Override
     public void notifyListeners(WaiterInstruction instruction) {
         for(WaiterListener waiterListener : waiterListeners){
-            waiterListener.receiveNotification(instruction);
+
+            // Potentially bad code, has reference to waiter instead of waiterListener
+
+            // only assign waiter to deliver dish if it is the waiters table
+            Waiter currentWaiter = (Waiter) waiterListener;
+            if (currentWaiter.getAssignedTableIndexes().contains(instruction.getTableNumber())){
+                waiterListener.receiveNotification(instruction);
+            }
+
         }
     }
 
     // Receive that a dish is finished from the chefs
     @Override
     public void receiveNotification(Dish dish) {
+        // Sent deliver dish notification
         notifyListeners(new WaiterInstruction(Enums.WaiterAction.DELIVERDISH, dish.getTableOriginIndex(), dish));
     }
 }

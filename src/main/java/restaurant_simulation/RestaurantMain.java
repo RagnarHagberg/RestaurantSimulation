@@ -13,34 +13,71 @@ public class RestaurantMain extends JPanel {
     static int delta = 33;
     // In here all objects that are needed for operating the restaurant should be created.
     // This is initialisation and determines the initial state of the program.
+
+    static Chef prepChef;
+    static Chef pastryChef;
+    static Chef gardemangerChef;
+    static Chef sousChef;
+
+    static ArrayList<Chef> chefList = new ArrayList<Chef>();
+
     static void setupRestaurant(){
 
-        // create headChef
-        headChef = new HeadChef(400,300);
+        // Create menu
+        // Might be moved to another file
+        ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>(Arrays.asList(new MenuItem("Fish fingers", 10, Enums.ChefType.SOUS),
+                new MenuItem("Meatballs", 5, Enums.ChefType.SOUS), new MenuItem("Bouef Bourgoignon", 12, Enums.ChefType.SOUS)));
+        Menu menu1 = new Menu(menuItems);
+
+
+        // create chefs
+        prepChef = new Chef(10,10,30,Color.orange, Enums.ChefType.PREP);
+        pastryChef = new Chef(10,200,50, Color.pink, Enums.ChefType.PASTRY);
+        gardemangerChef = new Chef(200, 10, 30, Color.green, Enums.ChefType.GARDEMANGER);
+        sousChef = new Chef(200, 200, 30, Color.yellow, Enums.ChefType.SOUS);
+
+        chefList.add(prepChef);
+        chefList.add(pastryChef);
+        chefList.add(sousChef);
+        chefList.add(gardemangerChef);
+
+        // create headchef with references to all chefs
+        headChef = new HeadChef(400,300, prepChef, sousChef, pastryChef, gardemangerChef);
+
+        // make the headchef a listener to all the chefs
+        for (Chef chef : chefList){
+            chef.addListener(headChef);
+        }
 
         // create tables
-        for (int j = 0; j<2; j++){
+        for (int j = 0; j<6; j++){
             Table table = new Table(j);
             tables.add(table);
         }
 
         // create waiters
-        for (int i = 0; i<1; i++){
+        for (int i = 0; i<3; i++){
             Waiter waiter = new Waiter(i);
             waiter.setTables(tables);
             waiter.setChef(headChef);
+            waiter.setCurrentMenu(menu1);
             waiters.add(waiter);
+            headChef.addListener(waiter);
         }
+
 
         // Assign waiter to tables
-        for (Table t : tables){
-            t.addListener(waiters.get(0)); // All tables are assigned waiter No. 0
-        }
+        int waiterIndex = 0;
+        for (int i = 0; i < tables.size(); i++) {
+            tables.get(i).addListener(waiters.get(waiterIndex));
 
-        ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>(Arrays.asList(new MenuItem("Fish fingers", 10, Enums.TargetChef.SOUS),
-                new MenuItem("Meatballs", 5, Enums.TargetChef.SOUS), new MenuItem("Bouef Bourgoignon", 12, Enums.TargetChef.SOUS)));
-        Menu menu1 = new Menu(menuItems);
-        waiters.getFirst().setCurrentMenu(menu1);
+            waiters.get(waiterIndex).addTableIndexToAssignedTableIndexes(i);
+
+            // Each waiter is assigned to two tables before moving to the next waiter
+            if ((i + 1) % 2 == 0) {
+                waiterIndex = (waiterIndex + 1) % waiters.size();
+            }
+        }
     }
 
     // Contains the simulation logic, should probably be broken into smaller pieces as the program expands
@@ -53,6 +90,10 @@ public class RestaurantMain extends JPanel {
 
         for (Table t : tables) {
             t.update(delta);
+        }
+
+        for (Chef chef: chefList){
+            chef.update(delta);
         }
 
         headChef.update(delta);
@@ -85,6 +126,8 @@ public class RestaurantMain extends JPanel {
 
         // Draw the Head chef
         drawHeadChef(g);
+
+        drawChefs(g);
         // MORE CODE HERE
     }
 
@@ -118,6 +161,20 @@ public class RestaurantMain extends JPanel {
         g.fillOval(headChef.getX()+7, headChef.getY()+7, headChef.getDiameter()-14, headChef.getDiameter()-14);
         g.setColor(Color.BLACK);
         g.drawString("Head Chef", headChef.getX()+30,  headChef.getY()+35);
+
+    }
+
+    static void drawChefs(Graphics g){
+
+        for(Chef chef : chefList){
+            g.setColor(Color.black);
+            g.fillOval(chef.getX(), chef.getY(), chef.getDiameter(), chef.getDiameter());
+            g.setColor(chef.getBodyColor());
+            g.fillOval(chef.getX()+7, chef.getY()+7, chef.getDiameter()-14, chef.getDiameter()-14);
+            g.setColor(Color.BLACK);
+            g.drawString(chef.getChefType().name(),chef.getX()+30,chef.getY()+35);
+        }
+
 
     }
 

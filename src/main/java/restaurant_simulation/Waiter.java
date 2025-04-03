@@ -79,6 +79,7 @@ public class Waiter implements WaiterListener {
 
     private boolean hasWalkedToMiddle = false;
 
+    private ArrayList<Integer> assignedTableIndexes = new ArrayList<>();
     /**
      * Constructs a new Waiter with the specified index.
      * Sets the spawn position based on the waiter index.
@@ -112,6 +113,14 @@ public class Waiter implements WaiterListener {
 
     public String getActionText() {
         return actionText;
+    }
+
+    public void addTableIndexToAssignedTableIndexes(int tableIndex){
+        assignedTableIndexes.add(tableIndex);
+    }
+
+    public ArrayList<Integer> getAssignedTableIndexes() {
+        return assignedTableIndexes;
     }
 
     /**
@@ -205,6 +214,13 @@ public class Waiter implements WaiterListener {
             case REQUESTTOORDER:
                 chef.addOrder(currentOrder);
                 finishCurrentInstruction();
+                break;
+            case DELIVERDISH:
+                System.out.println("Current dish is: " + currentInstruction.getDish().courseName);
+
+                setTargetToTable(currentInstruction.getTableNumber());
+                break;
+
         }
     }
 
@@ -231,6 +247,12 @@ public class Waiter implements WaiterListener {
 
                 // set target to head chef, and hand over the new orders.
                 setTarget(Target.CHEF, chef.getX(), chef.getY());
+                isAtTable = false;
+                break;
+
+            case DELIVERDISH:
+                table.addDish(currentInstruction.getDish());
+                finishCurrentInstruction();
                 isAtTable = false;
                 break;
         }
@@ -390,7 +412,9 @@ public class Waiter implements WaiterListener {
                 break;
 
             case DELIVERDISH:
-                currentInstruction.getDish();
+                setTarget(Target.CHEF, chef.getX(), chef.getY());
+                break;
+                //currentInstruction.getDish();
         }
 
     }

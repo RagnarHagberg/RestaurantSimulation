@@ -32,6 +32,8 @@ public class Table implements WaiterPublisher{
 
     public List<WaiterListener> waiterListeners = new ArrayList<>();
 
+    private ArrayList<Dish> dishes = new ArrayList<>();
+
     Table(int tableNumber){
         this.tableNumber = tableNumber;
 
@@ -108,11 +110,17 @@ public class Table implements WaiterPublisher{
         ArrayList<MenuItem> orderList = new ArrayList<>();
 
         for (int i = 0; i < amountOfGuests; i++) {
-            orderList.add(currentMenu.selectRandomItem());
+            MenuItem orderedItem = currentMenu.selectRandomItem();
+            System.out.println("Ordered: " + orderedItem.courseName);
+            orderList.add(orderedItem);
         }
 
         Order order = new Order(orderList, getTableNumber());
 
         return order;
+    }
+
+    public void addDish(Dish newDish){
+        dishes.add(newDish);
     }
 }
