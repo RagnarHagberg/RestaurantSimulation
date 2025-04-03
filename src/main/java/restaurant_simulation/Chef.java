@@ -26,6 +26,9 @@ public class Chef {
     private ArrayList<Dish> dishQueue = new ArrayList<>();
     private Dish currentDish;
 
+    private float progressProportion;
+
+    private int timeNeededForDish;
 
     Chef(int x, int y, int diameter, Color bodyColor, Enums.ChefType chefType){
         this.x = x;
@@ -35,6 +38,13 @@ public class Chef {
         this.bodyColor = bodyColor;
     }
 
+    public boolean isCooking() {
+        return isCooking;
+    }
+
+    public float getProgressProportion() {
+        return progressProportion;
+    }
 
     public Color getBodyColor() {
         return bodyColor;
@@ -49,7 +59,8 @@ public class Chef {
 
         currentDish = dishQueue.getFirst();
         isCooking = true;
-        setDishFinishedTime(3000);
+        timeNeededForDish = 3000;
+        setDishFinishedTime(timeNeededForDish);
     }
 
     public void addDish(Dish dish){
@@ -77,6 +88,7 @@ public class Chef {
 
     private void dishFinished(){
         // send finished dish to head chef
+        progressProportion = 0;
         notifyListeners(currentDish);
 
         dishQueue.remove(currentDish);
@@ -88,6 +100,10 @@ public class Chef {
     public void update(int delta){
         elapsedTime += delta;
         if (isCooking){
+
+            // draw progress bar
+            progressProportion = (float) (timeNeededForDish-(dishFinishedTime-elapsedTime)) / timeNeededForDish;
+
             if (elapsedTime > dishFinishedTime){
                 dishFinished();
             }

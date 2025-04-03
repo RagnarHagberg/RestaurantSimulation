@@ -31,10 +31,10 @@ public class RestaurantMain extends JPanel {
 
 
         // create chefs
-        prepChef = new Chef(10,10,30,Color.orange, Enums.ChefType.PREP);
-        pastryChef = new Chef(10,200,50, Color.pink, Enums.ChefType.PASTRY);
-        gardemangerChef = new Chef(200, 10, 30, Color.green, Enums.ChefType.GARDEMANGER);
-        sousChef = new Chef(200, 200, 30, Color.yellow, Enums.ChefType.SOUS);
+        prepChef = new Chef(10,100,50,Color.orange, Enums.ChefType.PREP);
+        pastryChef = new Chef(10,400,70, Color.pink, Enums.ChefType.PASTRY);
+        gardemangerChef = new Chef(200, 100, 50, Color.green, Enums.ChefType.GARDEMANGER);
+        sousChef = new Chef(200, 400, 50, Color.yellow, Enums.ChefType.SOUS);
 
         chefList.add(prepChef);
         chefList.add(pastryChef);
@@ -96,7 +96,10 @@ public class RestaurantMain extends JPanel {
             chef.update(delta);
         }
 
-        headChef.update(delta);
+
+        if (headChef != null){
+            headChef.update(delta);
+        }
 
         // ... similar updates for all other agents in the simulation.
     }
@@ -172,7 +175,18 @@ public class RestaurantMain extends JPanel {
             g.setColor(chef.getBodyColor());
             g.fillOval(chef.getX()+7, chef.getY()+7, chef.getDiameter()-14, chef.getDiameter()-14);
             g.setColor(Color.BLACK);
-            g.drawString(chef.getChefType().name(),chef.getX()+30,chef.getY()+35);
+            g.drawString(chef.getChefType().name(),chef.getX()+25,chef.getY()+60);
+
+            // Draw progress bar
+
+            if (chef.isCooking()) {
+                int startX = chef.getX();
+                int width = 50;
+                g.setColor(Color.black);
+                g.fillRect(startX, chef.getY() - 50, width, 30);
+                g.setColor(Color.green);
+                g.fillRect(startX + 5, chef.getY() - 45, (int) ((width - 10) * chef.getProgressProportion()), 20);
+            }
         }
 
 
