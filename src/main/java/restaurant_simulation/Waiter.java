@@ -26,6 +26,8 @@ public class Waiter implements WaiterListener {
     /** The diameter of the waiter's visual representation */
     private int diameter = 50;
 
+    private int walkSpeed = 10;
+
     /** The X coordinate of the waiter's spawn point */
     private int spawnX;
     /** The Y coordinate of the waiter's spawn point */
@@ -341,7 +343,7 @@ public class Waiter implements WaiterListener {
         int yDirectionToMiddle = (y < 320) ? 1 : -1;
 
         if (Math.abs(y-320) > 25 && !hasWalkedToMiddle){
-            setY(y + 5 * yDirectionToMiddle);
+            setY(y + walkSpeed * yDirectionToMiddle);
             return;
         }
         else{
@@ -350,11 +352,11 @@ public class Waiter implements WaiterListener {
 
         // first walk the x direction
         if (Math.abs(x-targetX) > 50){
-            setX(x + 5 * xDirectionToTarget);
+            setX(x + walkSpeed * xDirectionToTarget);
         }
         // then walk in the y direction
         else if (Math.abs(y-targetY) > 50){
-            setY(y + 5 * yDirectionToTarget);
+            setY(y + walkSpeed * yDirectionToTarget);
             // walk y
         }
 

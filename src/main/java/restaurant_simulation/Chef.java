@@ -2,6 +2,7 @@ package restaurant_simulation;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class Chef {
     // Progress bar on every item
@@ -14,6 +15,14 @@ public class Chef {
     private int y;
     private int diameter;
     private Color bodyColor;
+
+    private int headChefX = 300;
+    private int headChefY = 300;
+    private boolean isWalkingToHeadChef;
+
+    private int spawnX;
+    private int spawnY;
+    private boolean isWalkingToSpawn;
 
     private boolean isCooking;
     private int elapsedTime = 0;
@@ -33,10 +42,21 @@ public class Chef {
     Chef(int x, int y, int diameter, Color bodyColor, Enums.ChefType chefType){
         this.x = x;
         this.y = y;
+        this.spawnX = x;
+        this.spawnY = y;
         this.diameter = diameter;
         this.chefType = chefType;
         this.bodyColor = bodyColor;
     }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
 
     public boolean isCooking() {
         return isCooking;
@@ -89,16 +109,59 @@ public class Chef {
     private void dishFinished(){
         // send finished dish to head chef
         progressProportion = 0;
-        notifyListeners(currentDish);
 
         dishQueue.remove(currentDish);
         isCooking = false;
 
-        prepareNextDish();
+        // Walk to head chef and back before preparing next dish
+        // The head chef will be noticed when the chef arrives
+        isWalkingToHeadChef = true;
+
+        // the next dish will be prepared when the character arrives at spawn
+    }
+
+
+    private void walkToVector(RVector otherVector){
+        RVector chefVector = new RVector(x,y,0);
+        RVector subtractedVector = otherVector.subtractVector(chefVector);
+
+        if (subtractedVector.getLength() < 10){
+            if (isWalkingToHeadChef){
+                notifyListeners(currentDish);
+
+                isWalkingToHeadChef = false;
+                isWalkingToSpawn = true;
+                return;
+            }
+            if (isWalkingToSpawn){
+                isWalkingToSpawn = false;
+                prepareNextDish();
+                return;
+            }
+
+        }
+
+        RVector directionVector = subtractedVector.getUnitVector();
+        RVector scaledVector = directionVector.getScaledVector(5); // Scale with walkspeed
+
+        setX(x + (int) scaledVector.getA());
+        setY(y + (int) scaledVector.getB());
     }
 
     public void update(int delta){
         elapsedTime += delta;
+
+        if (isWalkingToHeadChef){
+            RVector headChefVector = new RVector(headChefX, headChefY, 0);
+            walkToVector(headChefVector);
+        }
+
+        if (isWalkingToSpawn){
+            RVector spawnVector = new RVector(spawnX,spawnY, 0);
+            walkToVector(spawnVector);
+        }
+
+
         if (isCooking){
 
             // draw progress bar
