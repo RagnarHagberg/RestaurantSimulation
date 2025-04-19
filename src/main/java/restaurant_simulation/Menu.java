@@ -11,6 +11,6 @@ public class Menu {
 
     MenuItem selectRandomItem(){
         Random random = new Random();
-        return items.get(random.nextInt(items.size()-1));
+        return items.get(random.nextInt(items.size()));
     }
 }

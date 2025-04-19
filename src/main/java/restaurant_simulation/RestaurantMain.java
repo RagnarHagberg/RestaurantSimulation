@@ -26,7 +26,8 @@ public class RestaurantMain extends JPanel {
         // Create menu
         // Might be moved to another file
         ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>(Arrays.asList(new MenuItem("Fish fingers", 10, Enums.ChefType.SOUS),
-                new MenuItem("Meatballs", 5, Enums.ChefType.SOUS), new MenuItem("Bouef Bourgoignon", 12, Enums.ChefType.SOUS)));
+                new MenuItem("Meatballs", 5, Enums.ChefType.SOUS), new MenuItem("Bouef Bourgoignon", 12, Enums.ChefType.SOUS),
+                new MenuItem("Pink Cake", 7, Enums.ChefType.PASTRY), new MenuItem("Garlic bread", 3, Enums.ChefType.GARDEMANGER)));
         Menu menu1 = new Menu(menuItems);
 
 

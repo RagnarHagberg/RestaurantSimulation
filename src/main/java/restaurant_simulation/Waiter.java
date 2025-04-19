@@ -14,24 +14,16 @@ import java.util.ArrayList;
  * @author Ragnar Hagberg
  */
 
-public class Waiter implements WaiterListener {
+public class Waiter extends CanvasObject implements WaiterListener {
     /** Represents the index of the waiter in relation to the other waiters created by the controller
     */
     private int waiterIndex;
 
-    /** The current X position of the waiter */
-    private int x;
-    /** The current Y position of the waiter */
-    private int y;
     /** The diameter of the waiter's visual representation */
     private int diameter = 50;
 
     private int walkSpeed = 10;
 
-    /** The X coordinate of the waiter's spawn point */
-    private int spawnX;
-    /** The Y coordinate of the waiter's spawn point */
-    private int spawnY;
 
     /** The X coordinate of the waiter's current target */
     private int targetX;
@@ -84,17 +76,13 @@ public class Waiter implements WaiterListener {
     private ArrayList<Integer> assignedTableIndexes = new ArrayList<>();
     /**
      * Constructs a new Waiter with the specified index.
-     * Sets the spawn position based on the waiter index.
+     * Sets the spawn position based on the waiter index by calling the canvasObject constructor.
      *
      * @param waiterIndex The unique identifier for this waiter
      */
     Waiter(int waiterIndex){
+        super(600 + 100*waiterIndex, 300);
         this.waiterIndex = waiterIndex;
-
-        this.spawnX = 600 + 100*waiterIndex;
-        this.spawnY = 300;
-        setX(spawnX);
-        setY(spawnY);
     }
 
     public void setChef(HeadChef chef) {
@@ -148,57 +136,10 @@ public class Waiter implements WaiterListener {
         this.actionText = actionString + targetString;
     }
 
-
-    /**
-     * Gets the waiter's current X position.
-     *
-     * @return The X coordinate
-     */
-    public int getX() {
-        return x;
-    }
-
-    /**
-     * Gets the waiter's current Y position.
-     *
-     * @return The Y coordinate
-     */
-    public int getY() {
-        return y;
-    }
-
-    /**
-     * Sets the waiter's X position.
-     *
-     * @param x The new X coordinate
-     */
-    public void setX(int x){
-        this.x = x;
-    }
-
-    /**
-     * Sets the waiter's Y position.
-     *
-     * @param y The new Y coordinate
-     */
-    public void setY(int y){
-        this.y = y;
-    }
-
-    /**
-     * Gets the diameter of the waiter's visual representation.
-     *
-     * @return The diameter in pixels
-     */
     public int getDiameter() {
         return diameter;
     }
 
-    /**
-     * Gets the waiter's unique index.
-     *
-     * @return The waiter index
-     */
     public int getWaiterIndex() {
         return waiterIndex;
     }
@@ -316,7 +257,7 @@ public class Waiter implements WaiterListener {
      * Sets the waiter's target to their spawn point.
      */
     public void setTargetToSpawn(){
-        setTarget(Target.COORDINATE, spawnX, spawnY);
+        setTarget(Target.COORDINATE, getSpawnX(), getSpawnY());
     }
 
     /**
@@ -327,23 +268,23 @@ public class Waiter implements WaiterListener {
         int xDirectionToTarget;
         int yDirectionToTarget;
 
-        if (targetX < x) {
+        if (targetX < getX()) {
             xDirectionToTarget = -1;   //xDirectionToTarget = targetX < x: 1 ? -1;
         }else{
             xDirectionToTarget = 1;
         }
 
-        if (targetY < y) {
+        if (targetY < getY()) {
             yDirectionToTarget = -1;
         }else{
             yDirectionToTarget = 1;
         }
 
 
-        int yDirectionToMiddle = (y < 320) ? 1 : -1;
+        int yDirectionToMiddle = (getY() < 320) ? 1 : -1;
 
-        if (Math.abs(y-320) > 25 && !hasWalkedToMiddle){
-            setY(y + walkSpeed * yDirectionToMiddle);
+        if (Math.abs(getY()-320) > 25 && !hasWalkedToMiddle){
+            setY(getY() + walkSpeed * yDirectionToMiddle);
             return;
         }
         else{
@@ -351,12 +292,12 @@ public class Waiter implements WaiterListener {
         }
 
         // first walk the x direction
-        if (Math.abs(x-targetX) > 50){
-            setX(x + walkSpeed * xDirectionToTarget);
+        if (Math.abs(getX()-targetX) > 50){
+            setX(getX() + walkSpeed * xDirectionToTarget);
         }
         // then walk in the y direction
-        else if (Math.abs(y-targetY) > 50){
-            setY(y + walkSpeed * yDirectionToTarget);
+        else if (Math.abs(getY()-targetY) > 50){
+            setY(getY() + walkSpeed * yDirectionToTarget);
             // walk y
         }
 

@@ -4,24 +4,21 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Vector;
 
-public class Chef {
+public class Chef extends CanvasObject {
     // Progress bar on every item
 
     // max size x
     // create rectangle with size (0, time/total * max_size)
     // time/total time  * max size = x
 
-    private int x;
-    private int y;
     private int diameter;
     private Color bodyColor;
 
+    // TODO get coordinates from constructor
     private int headChefX = 300;
     private int headChefY = 300;
     private boolean isWalkingToHeadChef;
 
-    private int spawnX;
-    private int spawnY;
     private boolean isWalkingToSpawn;
 
     private boolean isCooking;
@@ -40,21 +37,10 @@ public class Chef {
     private int timeNeededForDish;
 
     Chef(int x, int y, int diameter, Color bodyColor, Enums.ChefType chefType){
-        this.x = x;
-        this.y = y;
-        this.spawnX = x;
-        this.spawnY = y;
+        super(x,y);
         this.diameter = diameter;
         this.chefType = chefType;
         this.bodyColor = bodyColor;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
 
@@ -94,13 +80,6 @@ public class Chef {
         return diameter;
     }
 
-    public int getY() {
-        return y;
-    }
-
-    public int getX() {
-        return x;
-    }
 
     Enums.ChefType getChefType() {
         return chefType;
@@ -122,7 +101,7 @@ public class Chef {
 
 
     private void walkToVector(RVector otherVector){
-        RVector chefVector = new RVector(x,y,0);
+        RVector chefVector = new RVector(getX(),getY(),0);
         RVector subtractedVector = otherVector.subtractVector(chefVector);
 
         if (subtractedVector.getLength() < 10){
@@ -144,8 +123,8 @@ public class Chef {
         RVector directionVector = subtractedVector.getUnitVector();
         RVector scaledVector = directionVector.getScaledVector(5); // Scale with walkspeed
 
-        setX(x + (int) scaledVector.getA());
-        setY(y + (int) scaledVector.getB());
+        setX(getX() + (int) scaledVector.getA());
+        setY(getY() + (int) scaledVector.getB());
     }
 
     public void update(int delta){
@@ -157,7 +136,7 @@ public class Chef {
         }
 
         if (isWalkingToSpawn){
-            RVector spawnVector = new RVector(spawnX,spawnY, 0);
+            RVector spawnVector = new RVector(getSpawnX(),getSpawnY(), 0);
             walkToVector(spawnVector);
         }
 

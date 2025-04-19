@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Table implements WaiterPublisher{
+public class Table extends CanvasObject implements WaiterPublisher{
 
 
     //TODO
@@ -15,8 +15,6 @@ public class Table implements WaiterPublisher{
 
 
      */
-    private int x;
-    private int y;
     private int diameter = 50;
     private int tableNumber;
     private int amountOfGuests;
@@ -35,25 +33,14 @@ public class Table implements WaiterPublisher{
     private ArrayList<Dish> dishes = new ArrayList<>();
 
     Table(int tableNumber){
+        super(625 + Math.floorDiv(tableNumber,2) * 150, (tableNumber % 2) * 500);
         this.tableNumber = tableNumber;
-
-        this.x = 625 + Math.floorDiv(getTableNumber(),2) * 150;
-        this.y = (getTableNumber() % 2) * 500;
 
         hasOrdered = false;
         elapsedTime = 0;
 
         Random random = new Random();
         amountOfGuests = random.nextInt(1,6);
-    }
-
-
-    public int getX() {
-        return this.x;
-    }
-
-    public int getY() {
-        return this.y;
     }
 
     public int getDiameter() {
@@ -96,6 +83,8 @@ public class Table implements WaiterPublisher{
             }
 
         }
+
+        // Get pastry menu if all dishes have been served and enough time has passed.
     }
 
     public void setCurrentMenu(Menu menu) {

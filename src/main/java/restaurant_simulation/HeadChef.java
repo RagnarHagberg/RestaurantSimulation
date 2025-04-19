@@ -3,9 +3,7 @@ package restaurant_simulation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HeadChef implements WaiterPublisher, HeadChefListener{
-    private int x;
-    private int y;
+public class HeadChef extends CanvasObject implements WaiterPublisher, HeadChefListener{
     private int diameter = 50;
 
     private int elapsedTime;
@@ -20,9 +18,7 @@ public class HeadChef implements WaiterPublisher, HeadChefListener{
     private Chef gardemangerChef;
 
     HeadChef(int x, int y, Chef prepChef, Chef sousChef, Chef pastryChef, Chef gardemangerChef){
-         this.x = x;
-         this.y = y;
-
+         super(x,y);
          this.prepChef = prepChef;
          this.sousChef = sousChef;
          this.pastryChef = pastryChef;
@@ -31,15 +27,6 @@ public class HeadChef implements WaiterPublisher, HeadChefListener{
 
     public int getDiameter() {
         return diameter;
-    }
-
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
     }
 
     public void update(int delta) {
