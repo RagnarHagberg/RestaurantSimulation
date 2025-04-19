@@ -5,12 +5,6 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 public class Chef extends CanvasObject {
-    // Progress bar on every item
-
-    // max size x
-    // create rectangle with size (0, time/total * max_size)
-    // time/total time  * max size = x
-
     private int diameter;
     private Color bodyColor;
 
@@ -57,7 +51,6 @@ public class Chef extends CanvasObject {
     }
 
     private void prepareNextDish(){
-
         if (dishQueue.isEmpty()){
             isCooking = false;
             return;
@@ -104,6 +97,8 @@ public class Chef extends CanvasObject {
         RVector chefVector = new RVector(getX(),getY(),0);
         RVector subtractedVector = otherVector.subtractVector(chefVector);
 
+        // If the distance between the vectors is less than 10, the chef has arrived at the target
+        // after arriving at the target, return to spawn
         if (subtractedVector.getLength() < 10){
             if (isWalkingToHeadChef){
                 notifyListeners(currentDish);
@@ -120,6 +115,7 @@ public class Chef extends CanvasObject {
 
         }
 
+        // Move based on the direction to the target
         RVector directionVector = subtractedVector.getUnitVector();
         RVector scaledVector = directionVector.getScaledVector(5); // Scale with walkspeed
 
@@ -142,7 +138,6 @@ public class Chef extends CanvasObject {
 
 
         if (isCooking){
-
             // draw progress bar
             progressProportion = (float) (timeNeededForDish-(dishFinishedTime-elapsedTime)) / timeNeededForDish;
 

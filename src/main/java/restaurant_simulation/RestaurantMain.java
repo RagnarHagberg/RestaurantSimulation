@@ -84,7 +84,7 @@ public class RestaurantMain extends JPanel {
     // Contains the simulation logic, should probably be broken into smaller pieces as the program expands
     static void update(int delta) {
 
-        // what should happen with the waiter each time the simulation loops
+        // Update all visible objects
         for (Waiter w : waiters) {
             w.update(delta);
         }

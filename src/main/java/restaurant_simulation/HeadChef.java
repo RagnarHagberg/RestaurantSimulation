@@ -35,6 +35,7 @@ public class HeadChef extends CanvasObject implements WaiterPublisher, HeadChefL
 
     private void instructChefs(){
         Order currentOrder = orders.getFirst();
+        // Sort the dishes in the queue to the correct Chef and task the chef to make the dish
         for (MenuItem menuItem : currentOrder.getDishes()){
             Dish currentDish = new Dish(menuItem.courseName, currentOrder.getTableOriginIndex());
             switch (menuItem.getTargetChef()){
@@ -81,7 +82,6 @@ public class HeadChef extends CanvasObject implements WaiterPublisher, HeadChefL
         for(WaiterListener waiterListener : waiterListeners){
 
             // Potentially bad code, has reference to waiter instead of waiterListener
-
             // only assign waiter to deliver dish if it is the waiters table
             Waiter currentWaiter = (Waiter) waiterListener;
             if (currentWaiter.getAssignedTableIndexes().contains(instruction.getTableNumber())){
