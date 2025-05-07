@@ -20,14 +20,21 @@ public class RestaurantMain extends JPanel {
     static DishChef sousChef;
     static ArrayList<DishChef> dishChefList = new ArrayList<DishChef>();
 
+    static HeadWaiter headWaiter;
 
     static ChefWorkstation sousStation;
     static ChefWorkstation pastryStation;
     static ChefWorkstation gardemangerStation;
     static ArrayList<ChefWorkstation> workstationList = new ArrayList<ChefWorkstation>();
 
+    static GuestInstanceController guestInstanceController;
+    static RestaurantQueue restaurantQueue;
 
     static void setupRestaurant(){
+
+        headWaiter = new HeadWaiter(1120, 150);
+        restaurantQueue = new RestaurantQueue();
+        guestInstanceController = new GuestInstanceController(restaurantQueue);
 
         // Create menu
         // Might be moved to another file
@@ -125,6 +132,12 @@ public class RestaurantMain extends JPanel {
             headChef.update(delta);
         }
 
+        guestInstanceController.update(delta);
+
+        for (Guest guest : guestInstanceController.getGuests()){
+            guest.update(delta);
+        }
+
         // ... similar updates for all other agents in the simulation.
     }
 
@@ -154,13 +167,16 @@ public class RestaurantMain extends JPanel {
         // Draw the Head chef
         if (headChef != null){
             drawHeadChef(g);
-
         }
 
         // draw the dishchefs and prepchef
         drawChefs(g);
 
         drawWorkstations(g);
+
+        drawGuests(g);
+
+        drawHeadWaiter(g);
         // MORE CODE HERE
     }
 
@@ -173,6 +189,24 @@ public class RestaurantMain extends JPanel {
             g.fillOval(table.getX()+3, table.getY()+3, table.getDiameter()-6, table.getDiameter()-6);
             g.setColor(Color.BLACK);
             g.drawString(String.valueOf(table.getTableNumber()), table.getX()+30,  table.getY()+35);
+        }
+    }
+
+    static void drawHeadWaiter(Graphics g){
+        g.setColor(Color.BLACK);
+        g.fillOval(headWaiter.getX(), headWaiter.getY(), headWaiter.getDiameter(), headWaiter.getDiameter());
+        g.setColor(Color.decode("#A020F0"));
+        g.fillOval(headWaiter.getX()+7, headWaiter.getY()+7, headWaiter.getDiameter()-14, headWaiter.getDiameter()-14); // Draw circle with diameter of 50 pixels
+        g.setColor(Color.BLACK);
+    }
+
+    static void drawGuests(Graphics g){
+        for (Guest guest: guestInstanceController.getGuests()){
+            g.setColor(Color.BLACK);
+            g.fillOval(guest.getX(), guest.getY(), guest.getDiameter(), guest.getDiameter());
+            g.setColor(Color.WHITE);
+            g.fillOval(guest.getX()+7, guest.getY()+7, guest.getDiameter()-14, guest.getDiameter()-14); // Draw circle with diameter of 50 pixels
+            g.setColor(Color.BLACK);
         }
     }
 
@@ -235,8 +269,6 @@ public class RestaurantMain extends JPanel {
             g.setColor(Color.BLACK);
             g.drawString("Prep", prepChef.getX()+25, prepChef.getY()+60);
         }
-
-
     }
 
     public static void main(String[] args) {

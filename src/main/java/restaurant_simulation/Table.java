@@ -17,7 +17,7 @@ public class Table extends CanvasObject implements WaiterPublisher{
      */
     private int diameter = 50;
     private int tableNumber;
-    private int amountOfGuests;
+    private int amountOfGuests = 4;
 
     private int elapsedTime;
 
@@ -39,8 +39,12 @@ public class Table extends CanvasObject implements WaiterPublisher{
         hasOrdered = false;
         elapsedTime = 0;
 
-        Random random = new Random();
-        amountOfGuests = random.nextInt(1,6);
+        //Random random = new Random();
+        //amountOfGuests = random.nextInt(1,6);
+    }
+
+    public int getAmountOfGuests() {
+        return amountOfGuests;
     }
 
     public int getDiameter() {
@@ -83,6 +87,8 @@ public class Table extends CanvasObject implements WaiterPublisher{
             }
 
         }
+
+        // time for receiving dish + 20 000 time to levae
 
         // Get pastry menu if all dishes have been served and enough time has passed.
     }
