@@ -4,7 +4,6 @@ public class Enums {
     enum ChefType {
         SOUS,
         GARDEMANGER,
-        PREP,
         PASTRY
     }
 

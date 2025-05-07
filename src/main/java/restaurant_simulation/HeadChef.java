@@ -12,14 +12,12 @@ public class HeadChef extends CanvasObject implements WaiterPublisher, HeadChefL
 
     private ArrayList<Order> orders = new ArrayList<>();
 
-    private Chef prepChef;
-    private Chef sousChef;
-    private Chef pastryChef;
-    private Chef gardemangerChef;
+    private DishChef sousChef;
+    private DishChef pastryChef;
+    private DishChef gardemangerChef;
 
-    HeadChef(int x, int y, Chef prepChef, Chef sousChef, Chef pastryChef, Chef gardemangerChef){
+    HeadChef(int x, int y, DishChef sousChef, DishChef pastryChef, DishChef gardemangerChef){
          super(x,y);
-         this.prepChef = prepChef;
          this.sousChef = sousChef;
          this.pastryChef = pastryChef;
          this.gardemangerChef = gardemangerChef;
@@ -35,23 +33,18 @@ public class HeadChef extends CanvasObject implements WaiterPublisher, HeadChefL
 
     private void instructChefs(){
         Order currentOrder = orders.getFirst();
-        // Sort the dishes in the queue to the correct Chef and task the chef to make the dish
+        // Sort the dishes in the order to the correct Chef and task the chef to make the dish
         for (MenuItem menuItem : currentOrder.getDishes()){
             Dish currentDish = new Dish(menuItem.courseName, currentOrder.getTableOriginIndex());
-            switch (menuItem.getTargetChef()){
-                case PREP:
-                    prepChef.addDish(currentDish);
-                    break;
-                case SOUS:
-                    sousChef.addDish(currentDish);
-                    break;
-                case GARDEMANGER:
-                    gardemangerChef.addDish(currentDish);
-                    break;
-                case PASTRY:
-                    pastryChef.addDish(currentDish);
-                    break;
-            }
+
+            // set strategy to chef strategy
+            DishChef currentChef = switch (menuItem.getTargetChef()) {
+                case SOUS -> sousChef;
+                case GARDEMANGER -> gardemangerChef;
+                case PASTRY -> pastryChef;
+            };
+
+            currentChef.addDish(currentDish);
         }
 
         orders.remove(currentOrder);
@@ -80,9 +73,6 @@ public class HeadChef extends CanvasObject implements WaiterPublisher, HeadChefL
     @Override
     public void notifyListeners(WaiterInstruction instruction) {
         for(WaiterListener waiterListener : waiterListeners){
-
-            // Potentially bad code, has reference to waiter instead of waiterListener
-            // only assign waiter to deliver dish if it is the waiters table
             Waiter currentWaiter = (Waiter) waiterListener;
             if (currentWaiter.getAssignedTableIndexes().contains(instruction.getTableNumber())){
                 waiterListener.receiveNotification(instruction);

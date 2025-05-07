@@ -1,10 +1,10 @@
 package restaurant_simulation;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Vector;
 
-public class Chef extends CanvasObject {
+public class DishChef extends CanvasObject {
     private int diameter;
     private Color bodyColor;
 
@@ -30,11 +30,17 @@ public class Chef extends CanvasObject {
 
     private int timeNeededForDish;
 
-    Chef(int x, int y, int diameter, Color bodyColor, Enums.ChefType chefType){
+    private ChefWorkstation workstation;
+
+    private int dishConsumptionPerDish = 10;
+
+    //TODO add reaction when ingredients are added. If they are added and now enough, start cooking
+    DishChef(int x, int y, int diameter, Color bodyColor, Enums.ChefType chefType, ChefWorkstation workstation){
         super(x,y);
         this.diameter = diameter;
         this.chefType = chefType;
         this.bodyColor = bodyColor;
+        this.workstation = workstation;
     }
 
 
@@ -51,13 +57,24 @@ public class Chef extends CanvasObject {
     }
 
     private void prepareNextDish(){
+        System.out.println(workstation.getIngredients());
         if (dishQueue.isEmpty()){
             isCooking = false;
             return;
         }
 
-        currentDish = dishQueue.getFirst();
+        if (workstation.getIngredients() < dishConsumptionPerDish){
+            System.out.println(this.chefType.name() + "does not have sufficient ingredients");
+            isCooking = false;
+            return;
+        }
+
         isCooking = true;
+
+        workstation.setIngredients(workstation.getIngredients() - dishConsumptionPerDish);
+        // if ingredients < needed amount
+
+        currentDish = dishQueue.getFirst();
         timeNeededForDish = 3000;
         setDishFinishedTime(timeNeededForDish);
     }
@@ -125,6 +142,13 @@ public class Chef extends CanvasObject {
 
     public void update(int delta){
         elapsedTime += delta;
+
+
+        if (workstation.getIngredients() > 10 && !isWalkingToHeadChef && !isWalkingToSpawn &&!isCooking){
+            prepareNextDish();
+            System.out.println(this.chefType.name() + "now has ingredients.");
+
+        }
 
         if (isWalkingToHeadChef){
             RVector headChefVector = new RVector(headChefX, headChefY, 0);
