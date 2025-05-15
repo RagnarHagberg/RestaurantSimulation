@@ -57,14 +57,12 @@ public class DishChef extends CanvasObject {
     }
 
     private void prepareNextDish(){
-        System.out.println(workstation.getIngredients());
         if (dishQueue.isEmpty()){
             isCooking = false;
             return;
         }
 
         if (workstation.getIngredients() < dishConsumptionPerDish){
-            System.out.println(this.chefType.name() + "does not have sufficient ingredients");
             isCooking = false;
             return;
         }
@@ -146,7 +144,6 @@ public class DishChef extends CanvasObject {
 
         if (workstation.getIngredients() > 10 && !isWalkingToHeadChef && !isWalkingToSpawn &&!isCooking){
             prepareNextDish();
-            System.out.println(this.chefType.name() + "now has ingredients.");
 
         }
 

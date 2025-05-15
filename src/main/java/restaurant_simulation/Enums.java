@@ -12,4 +12,8 @@ public class Enums {
         REQUESTTOORDER,
         DELIVERDISH
     }
+
+    enum TableSignal{
+        GUESTSLEFT
+    }
 }

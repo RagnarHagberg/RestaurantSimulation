@@ -159,8 +159,6 @@ public class Waiter extends CanvasObject implements WaiterListener {
                 finishCurrentInstruction();
                 break;
             case DELIVERDISH:
-                System.out.println("Current dish is: " + currentInstruction.getDish().courseName);
-
                 setTargetToTable(currentInstruction.getTableNumber());
                 break;
 
@@ -336,7 +334,6 @@ public class Waiter extends CanvasObject implements WaiterListener {
     private void executeNextInstruction(){
         if (instructionQueue.isEmpty()){
             currentInstruction = null;
-            System.out.println("Waiter No. " + getWaiterIndex() + " completed all tasks");
             setTargetToSpawn();
             return;
         }

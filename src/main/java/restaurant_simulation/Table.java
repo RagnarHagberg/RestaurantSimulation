@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Table extends CanvasObject implements WaiterPublisher{
+public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPublisher{
 
 
     //TODO
@@ -21,30 +21,51 @@ public class Table extends CanvasObject implements WaiterPublisher{
 
     private int elapsedTime;
 
-    private int timeForOrder = 1000000;
-    private boolean hasOrdered;
+    private int timeForOrder = 1000000000;
+    private int timeToLeave = 1000000000;
+
+    private int orderWaitTime = 10000;
+    private int leaveWaitTime = 20000;
+
+    private boolean empty = true;
+
+    private boolean hasOrdered = false;
     private boolean hasSentMenuNotification = false;
+    private boolean haveGuestsLeft = false;
 
     private Menu currentMenu;
 
 
     public List<WaiterListener> waiterListeners = new ArrayList<>();
 
+    public List<HeadWaiterListener> headWaiterListeners = new ArrayList<>();
+
     private ArrayList<Dish> dishes = new ArrayList<>();
+    private ArrayList<Guest> guests = new ArrayList<>();
+
+
+
+    private Order savedOrder;
 
     Table(int tableNumber){
         super(625 + Math.floorDiv(tableNumber,2) * 150, (tableNumber % 2) * 500);
         this.tableNumber = tableNumber;
 
-        hasOrdered = false;
-        elapsedTime = 0;
-
         //Random random = new Random();
         //amountOfGuests = random.nextInt(1,6);
     }
 
+    public boolean isEmpty() {
+        return empty;
+    }
+
     public int getAmountOfGuests() {
         return amountOfGuests;
+    }
+
+    public void addGuest(Guest guest){
+        guests.add(guest);
+        empty = false;
     }
 
     public int getDiameter() {
@@ -73,6 +94,9 @@ public class Table extends CanvasObject implements WaiterPublisher{
     public void update(int delta){
         elapsedTime += delta;
 
+        if (empty) {
+            return;
+        }
         if (elapsedTime > 5000 && !hasSentMenuNotification){ // check to time after customer arrives
             if (currentMenu == null){
                 hasSentMenuNotification = true;
@@ -85,18 +109,34 @@ public class Table extends CanvasObject implements WaiterPublisher{
                 notifyListeners(new WaiterInstruction(Enums.WaiterAction.REQUESTTOORDER, getTableNumber()));
                 hasOrdered = true;
             }
-
         }
 
-        // time for receiving dish + 20 000 time to levae
+        if (elapsedTime > timeToLeave){
 
-        // Get pastry menu if all dishes have been served and enough time has passed.
+            if (!haveGuestsLeft){
+                System.out.println("Time ot leave!");
+                notifyListeners(Enums.TableSignal.GUESTSLEFT);
+
+                System.out.println(guests.size());
+                // set guests target to leave restaurant and reset guests.
+                for(Guest guest : guests){
+                    // Guest leave
+                    System.out.println("Guest leave");
+                    guest.setTargetToSpawn(1000,100);
+                }
+
+                resetTable();
+                haveGuestsLeft = true;
+            }
+
+
+        }
     }
 
     public void setCurrentMenu(Menu menu) {
         // set time to think through menu
         currentMenu = menu;
-        timeForOrder = elapsedTime + 10000;
+        timeForOrder = elapsedTime + orderWaitTime;
         //System.out.println(menu.selectRandomItem().courseName);
     }
 
@@ -106,16 +146,61 @@ public class Table extends CanvasObject implements WaiterPublisher{
 
         for (int i = 0; i < amountOfGuests; i++) {
             MenuItem orderedItem = currentMenu.selectRandomItem();
-            System.out.println("Ordered: " + orderedItem.courseName);
             orderList.add(orderedItem);
         }
 
         Order order = new Order(orderList, getTableNumber());
+        savedOrder = order;
 
         return order;
     }
 
     public void addDish(Dish newDish){
         dishes.add(newDish);
+
+        // check if every ordered dish has arrived
+        if (savedOrder == null){
+            return;
+        }
+        if (dishes.size() == savedOrder.getDishes().size()){
+            timeToLeave = elapsedTime + leaveWaitTime;
+            System.out.println(timeToLeave);
+        }
     }
+
+
+    @Override
+    public void addListener(HeadWaiterListener newHeadWaiterListener) {
+        headWaiterListeners.add(newHeadWaiterListener);
+    }
+
+    @Override
+    public void removeListener(HeadWaiterListener newHeadWaiterListener) {
+        headWaiterListeners.remove(newHeadWaiterListener);
+
+    }
+
+
+    @Override
+    public void notifyListeners(Enums.TableSignal tableSignal) {
+        for(HeadWaiterListener headWaiterListener : headWaiterListeners){
+            headWaiterListener.receiveNotification(tableSignal);
+        }
+    }
+
+
+    // reset the order, dish, menu state, time stamps
+    public void resetTable(){
+        guests.clear();
+        dishes.clear();
+        savedOrder = null;
+        elapsedTime = 0;
+        timeForOrder = 1000000000;
+        timeToLeave = 1000000000;
+        hasSentMenuNotification = false;
+        haveGuestsLeft = false;
+        hasOrdered = false;
+        empty = true;
+        currentMenu = null;
+    };
 }

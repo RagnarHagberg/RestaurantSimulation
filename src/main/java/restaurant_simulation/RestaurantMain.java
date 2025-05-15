@@ -32,9 +32,8 @@ public class RestaurantMain extends JPanel {
 
     static void setupRestaurant(){
 
-        headWaiter = new HeadWaiter(1120, 150);
         restaurantQueue = new RestaurantQueue();
-        guestInstanceController = new GuestInstanceController(restaurantQueue);
+
 
         // Create menu
         // Might be moved to another file
@@ -77,6 +76,10 @@ public class RestaurantMain extends JPanel {
             Table table = new Table(j);
             tables.add(table);
         }
+
+        // give headwaiter reference to all tables
+        headWaiter = new HeadWaiter(1120, 150, restaurantQueue, tables);
+        guestInstanceController = new GuestInstanceController(restaurantQueue, headWaiter);
 
         // create waiters
         for (int i = 0; i<3; i++){
@@ -132,11 +135,17 @@ public class RestaurantMain extends JPanel {
             headChef.update(delta);
         }
 
+
         guestInstanceController.update(delta);
 
         for (Guest guest : guestInstanceController.getGuests()){
             guest.update(delta);
         }
+
+
+        headWaiter.update(delta);
+
+        //remove guests here
 
         // ... similar updates for all other agents in the simulation.
     }
