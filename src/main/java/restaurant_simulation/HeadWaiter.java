@@ -1,11 +1,12 @@
 package restaurant_simulation;
 
-
-// GuestManager som instansierar gäster
-
 import java.util.ArrayList;
 
-public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
+/**
+ * Handles guest seating by assigning them to tables when available.
+ * Navigates between the queue (spawn) and tables to manage guest placement.
+ */
+public class HeadWaiter extends CanvasObject implements  HeadWaiterListener, Updatable {
 
     private int diameter = 60;
     private ArrayList<Table> tables = new ArrayList<>();
@@ -21,6 +22,8 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
 
     private boolean hasWalkedToMiddle = false;
 
+    private static final int MIDDLE_Y = 320;
+    private static final int TARGET_THRESHOLD = 50;
 
     private enum Target {
         /** A position outside the restaurant */
@@ -34,7 +37,13 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
 
     private RestaurantQueue restaurantQueue;
 
-
+    /**
+     * Constructs the HeadWaiter with a reference to the queue and list of tables.
+     * @param x X-coordinate of spawn
+     * @param y Y-coordinate of spawn
+     * @param restaurantQueue guest queue
+     * @param tables table list to assign guests to
+     */
     HeadWaiter(int x, int y, RestaurantQueue restaurantQueue, ArrayList<Table> tables){
         super(x,y);
         this.tables = tables;
@@ -53,6 +62,7 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
     public int getDiameter() {
         return diameter;
     }
+
     private void setReady(boolean ready){
         isReady = ready;
         if (isReady){
@@ -91,6 +101,13 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
         setTarget(Target.SPAWN, x, y);
     }
 
+    /**
+     * Moves the head waiter towards the current target location.
+     * The movement prioritizes walking vertically to a middle line (y=320) first,
+     * then horizontally towards the target x-coordinate, and finally vertically
+     * to the target y-coordinate. Once close enough to the target, it performs
+     * actions depending on the target type (TABLE or SPAWN).
+     */
     private void walkToTarget(){
         int xDirectionToTarget;
         int yDirectionToTarget;
@@ -108,9 +125,9 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
         }
 
 
-        int yDirectionToMiddle = (getY() < 320) ? 1 : -1;
+        int yDirectionToMiddle = (getY() < MIDDLE_Y) ? 1 : -1;
 
-        if (Math.abs(getY()-320) > 25 && !hasWalkedToMiddle){
+        if (Math.abs(getY()-MIDDLE_Y) > 25 && !hasWalkedToMiddle){
             setY(getY() + walkSpeed * yDirectionToMiddle);
             return;
         }
@@ -119,11 +136,11 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
         }
 
         // first walk the x direction
-        if (Math.abs(getX()-targetX) > 50){
+        if (Math.abs(getX()-targetX) > TARGET_THRESHOLD){
             setX(getX() + walkSpeed * xDirectionToTarget);
         }
         // then walk in the y direction
-        else if (Math.abs(getY()-targetY) > 50){
+        else if (Math.abs(getY()-targetY) > TARGET_THRESHOLD){
             setY(getY() + walkSpeed * yDirectionToTarget);
             // walk y
         }
@@ -151,11 +168,19 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
         this.tables = tables;
     }
 
+    /**
+     * Called when the queue has changed or guests left.
+     * Attempts to assign guests to an empty table.
+     */
     public void guestsUpdated(){
         assignGuestsToTable();
 
     }
 
+    /**
+     * Attempts to assign the next 4 guests to an available empty table.
+     * If assigned, begins walking toward the table.
+     */
     // also call when the queue has been updated
     private void assignGuestsToTable(){
         if (!isReady){
@@ -172,7 +197,7 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
                     return;
                 }
 
-                ArrayList<Guest> guests = restaurantQueue.getNextGuests(4);
+                ArrayList<Guest> guests = restaurantQueue.getNextGuests(SimulationData.getInstance().getGUESTS_PER_TABLE());
 
                 table.resetTable();
 
@@ -194,7 +219,8 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
     }
 
     /**
-     * @param tableSignal
+     * Receives table event notifications and reacts if guests have left.
+     * @param tableSignal signal from a table (e.g., guests have left)
      */
     @Override
     public void receiveNotification(Enums.TableSignal tableSignal) {

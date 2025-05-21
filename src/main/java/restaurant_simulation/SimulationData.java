@@ -5,6 +5,8 @@ public final class SimulationData {
     private static SimulationData INSTANCE;
     private int crowns = 0;
 
+    private int GUESTS_PER_TABLE = 4;
+
     private SimulationData() {
     }
 
@@ -22,6 +24,11 @@ public final class SimulationData {
 
     public void addCrowns(int crowns) {
         this.crowns += crowns;
+    }
+
+
+    public int getGUESTS_PER_TABLE() {
+        return GUESTS_PER_TABLE;
     }
 
 

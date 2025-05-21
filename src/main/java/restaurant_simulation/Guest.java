@@ -2,7 +2,11 @@ package restaurant_simulation;
 
 import java.util.ArrayList;
 
-public class Guest extends CanvasObject{
+/**
+ * Represents a guest in the restaurant who moves toward a target (e.g., table or spawn point)
+ * and notifies its controller upon reaching the spawn (exit).
+ */
+public class Guest extends CanvasObject implements Updatable {
 
     private int diameter = 17;
     private int elapsedTime = 0;
@@ -19,22 +23,30 @@ public class Guest extends CanvasObject{
         TABLE
     }
 
-
     private Target currentTarget;
-
     private boolean hasWalkedToMiddle = false;
     private int walkSpeed = 3;
 
+    private static final int MIDDLE_Y = 320;
+    private static final int TARGET_THRESHOLD = 50;
+
+
     Guest(int x, int y){
-        super(x,y);
+        super(x, y);
     }
 
+    /**
+     * Registers a listener for this guest instance, e.g., for removal notification.
+     * @param newInstanceListener listener to be notified when guest reaches spawn
+     */
     public void addInstanceListener(GuestInstanceControllerListener newInstanceListener){
         instanceListener.add(newInstanceListener);
     }
 
+    /**
+     * Notifies the first registered listener that the guest should be removed.
+     */
     private void notifyListeners(){
-        //System.out.println("Removed guest from self");
         instanceListener.getFirst().guestRemoved(this);
     }
 
@@ -50,7 +62,12 @@ public class Guest extends CanvasObject{
         }
     }
 
-
+    /**
+     * Sets the guest's target position and type.
+     * @param target destination type (SPAWN or TABLE)
+     * @param x target X coordinate
+     * @param y target Y coordinate
+     */
     private void setTarget(Target target, int x, int y){
         this.currentTarget = target;
         hasWalkedToMiddle = false;
@@ -58,71 +75,61 @@ public class Guest extends CanvasObject{
         if (currentTarget != null){
             targetX = x;
             targetY = y;
-        }
-        else{
+        } else {
             targetX = 0;
             targetY = 0;
         }
     }
+
+    /**
+     * Sets the guest's target to a table location.
+     */
     public void setTargetToTable(int x, int y){
         setTarget(Target.TABLE, x, y);
     }
 
+    /**
+     * Sets the guest's target to the spawn (exit) location.
+     */
     public void setTargetToSpawn(int x, int y){
         setTarget(Target.SPAWN, x, y);
     }
 
+    /**
+     * Moves the guest toward the target, optionally via a "middle" corridor area.
+     * Upon reaching the target, notifies listeners or halts movement.
+     */
     private void walkToTarget(){
-        int xDirectionToTarget;
-        int yDirectionToTarget;
+        int xDirectionToTarget = (targetX < getX()) ? -1 : 1;
+        int yDirectionToTarget = (targetY < getY()) ? -1 : 1;
 
-        if (targetX < getX()) {
-            xDirectionToTarget = -1;   //xDirectionToTarget = targetX < x: 1 ? -1;
-        }else{
-            xDirectionToTarget = 1;
-        }
+        int yDirectionToMiddle = (getY() < MIDDLE_Y) ? 1 : -1;
 
-        if (targetY < getY()) {
-            yDirectionToTarget = -1;
-        }else{
-            yDirectionToTarget = 1;
-        }
-
-
-        int yDirectionToMiddle = (getY() < 320) ? 1 : -1;
-
-        if (Math.abs(getY()-320) > 25 && !hasWalkedToMiddle){
+        // Walk toward the middle corridor if not yet passed through it
+        if (Math.abs(getY() - MIDDLE_Y) > 25 && !hasWalkedToMiddle){
             setY(getY() + walkSpeed * yDirectionToMiddle);
             return;
-        }
-        else{
+        } else {
             hasWalkedToMiddle = true;
         }
 
-        // first walk the x direction
-        if (Math.abs(getX()-targetX) > 50){
+        // Move in X direction first
+        if (Math.abs(getX() - targetX) > TARGET_THRESHOLD){
             setX(getX() + walkSpeed * xDirectionToTarget);
         }
-        // then walk in the y direction
-        else if (Math.abs(getY()-targetY) > 50){
+        // Then move in Y direction
+        else if (Math.abs(getY() - targetY) > TARGET_THRESHOLD){
             setY(getY() + walkSpeed * yDirectionToTarget);
-            // walk y
         }
-
-        // if close enough to the target
-        else{
+        // Reached the target
+        else {
             switch (currentTarget) {
                 case TABLE:
-                    //currentTarget = null;
                     return;
                 case SPAWN:
                     notifyListeners();
-                    // remove guest self
-                    return;
-                default:
-                    setTarget(null,0,0);
+                    break;
             }
         }
     }
-
 }

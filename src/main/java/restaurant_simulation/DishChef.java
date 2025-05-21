@@ -4,194 +4,188 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class DishChef extends CanvasObject {
+/**
+ * Represents a chef responsible for preparing dishes of a specific type (e.g., pastry, sous, garde-manger).
+ * Handles movement between the spawn point and the head chef, manages a queue of dishes,
+ * and simulates cooking with time-based updates.
+ */
+public class DishChef extends CanvasObject implements Updatable {
     private int diameter;
     private Color bodyColor;
 
-    // TODO get coordinates from constructor
     private int headChefX = 300;
     private int headChefY = 300;
+
     private boolean isWalkingToHeadChef;
-
     private boolean isWalkingToSpawn;
-
     private boolean isCooking;
+
     private int elapsedTime = 0;
     private int dishFinishedTime;
 
     private ArrayList<HeadChefListener> headChefListeners = new ArrayList<>();
 
     private Enums.ChefType chefType;
-
     private ArrayList<Dish> dishQueue = new ArrayList<>();
     private Dish currentDish;
 
     private float progressProportion;
-
     private int timeNeededForDish;
 
     private ChefWorkstation workstation;
-
     private int dishConsumptionPerDish = 10;
 
-    //TODO add reaction when ingredients are added. If they are added and now enough, start cooking
-    DishChef(int x, int y, int diameter, Color bodyColor, Enums.ChefType chefType, ChefWorkstation workstation){
-        super(x,y);
+    /**
+     * Constructs a DishChef with given properties.
+     *
+     * @param x         initial x-position
+     * @param y         initial y-position
+     * @param diameter  diameter used for drawing/visual representation
+     * @param bodyColor color of the chef
+     * @param chefType  type of chef
+     * @param workstation workstation this chef uses
+     */
+    DishChef(int x, int y, int diameter, Color bodyColor, Enums.ChefType chefType, ChefWorkstation workstation, int headChefX, int headChefY) {
+        super(x, y);
         this.diameter = diameter;
         this.chefType = chefType;
         this.bodyColor = bodyColor;
         this.workstation = workstation;
+        this.headChefX = headChefX;
+        this.headChefY = headChefY;
     }
 
-
-    public boolean isCooking() {
-        return isCooking;
-    }
-
-    public float getProgressProportion() {
-        return progressProportion;
-    }
-
-    public Color getBodyColor() {
-        return bodyColor;
-    }
-
-    private void prepareNextDish(){
-        if (dishQueue.isEmpty()){
-            isCooking = false;
-            return;
-        }
-
-        if (workstation.getIngredients() <= dishConsumptionPerDish){
-            isCooking = false;
-            return;
-        }
-
-        isCooking = true;
-
-        workstation.setIngredients(workstation.getIngredients() - dishConsumptionPerDish);
-        // if ingredients < needed amount
-
-        currentDish = dishQueue.getFirst();
-        timeNeededForDish = 3000;
-        setDishFinishedTime(timeNeededForDish);
-    }
-
-    public void addDish(Dish dish){
+    /**
+     * Adds a dish to the queue and starts preparation if idle.
+     */
+    public void addDish(Dish dish) {
         dishQueue.add(dish);
-        if (dishQueue.size() ==  1){
+        if (dishQueue.size() == 1) {
             prepareNextDish();
         }
     }
 
-    public int getDiameter() {
-        return diameter;
-    }
-
-
-    Enums.ChefType getChefType() {
-        return chefType;
-    }
-
-    private void dishFinished(){
-        // send finished dish to head chef
+    /**
+     * Called when a dish finishes cooking. Triggers walk to head chef.
+     */
+    private void dishFinished() {
         progressProportion = 0;
-
         dishQueue.removeFirst();
         isCooking = false;
 
-        // Walk to head chef and back before preparing next dish
-        // The head chef will be noticed when the chef arrives
         isWalkingToHeadChef = true;
         isWalkingToSpawn = false;
-
-        // the next dish will be prepared when the character arrives at spawn
     }
 
-
-    private void walkToVector(RVector otherVector){
-        RVector chefVector = new RVector(getX(),getY(),0);
+    /**
+     * Walks the chef toward a target vector.
+     * Handles arrival logic (notifying head chef or returning to spawn).
+     */
+    private void walkToVector(RVector otherVector) {
+        RVector chefVector = new RVector(getX(), getY(), 0);
         RVector subtractedVector = otherVector.subtractVector(chefVector);
 
-        // If the distance between the vectors is less than 10, the chef has arrived at the target
-        // after arriving at the target, return to spawn
-        if (subtractedVector.getLength() < 10){
-            if (isWalkingToHeadChef){
+        if (subtractedVector.getLength() < 10) {
+            if (isWalkingToHeadChef) {
                 notifyListeners(currentDish);
-
                 isWalkingToHeadChef = false;
                 isWalkingToSpawn = true;
                 return;
             }
-            if (isWalkingToSpawn){
+            if (isWalkingToSpawn) {
                 isWalkingToHeadChef = false;
                 isWalkingToSpawn = false;
                 prepareNextDish();
                 return;
             }
-
         }
 
-        // Move based on the direction to the target
         RVector directionVector = subtractedVector.getUnitVector();
-        RVector scaledVector = directionVector.getScaledVector(5); // Scale with walkspeed
+        RVector scaledVector = directionVector.getScaledVector(5); // 5 = walk speed
 
         setX(getX() + (int) scaledVector.getA());
         setY(getY() + (int) scaledVector.getB());
     }
 
-    public void update(int delta){
+    /**
+     * Updates the chef's state every frame.
+     *
+     * @param delta time passed since last update
+     */
+    public void update(int delta) {
         elapsedTime += delta;
 
-        System.out.println(chefType + "has " + dishQueue.size() + "dishes left");
-
-        if (workstation.getIngredients() >= dishConsumptionPerDish && !isWalkingToHeadChef && !isWalkingToSpawn &&!isCooking){
+        if (workstation.getIngredients() >= dishConsumptionPerDish &&
+                !isWalkingToHeadChef &&
+                !isWalkingToSpawn &&
+                !isCooking) {
             prepareNextDish();
-        } else if (!dishQueue.isEmpty()){
-            System.out.println("Couldn't cook");
-            System.out.println("Iswalkingtoheadchef" + isWalkingToHeadChef);
-            System.out.println("iswalkingtospawn" + isWalkingToSpawn);
-            System.out.println("isCooking" + isCooking);
-            System.out.println("Ingredients: " + workstation.getIngredients());
         }
 
-        if (isWalkingToHeadChef){
-            RVector headChefVector = new RVector(headChefX, headChefY, 0);
-            walkToVector(headChefVector);
+        if (isWalkingToHeadChef) {
+            walkToVector(new RVector(headChefX, headChefY, 0));
+        } else if (isWalkingToSpawn) {
+            walkToVector(new RVector(getSpawnX(), getSpawnY(), 0));
         }
 
-        else if (isWalkingToSpawn){
-            RVector spawnVector = new RVector(getSpawnX(),getSpawnY(), 0);
-            walkToVector(spawnVector);
-        }
-
-
-        if (isCooking){
-            // draw progress bar
-            progressProportion = (float) (timeNeededForDish-(dishFinishedTime-elapsedTime)) / timeNeededForDish;
-
-            if (elapsedTime > dishFinishedTime){
+        if (isCooking) {
+            progressProportion = (float) (timeNeededForDish - (dishFinishedTime - elapsedTime)) / timeNeededForDish;
+            if (elapsedTime > dishFinishedTime) {
                 dishFinished();
             }
         }
     }
 
-    private void setDishFinishedTime(int neededTime){
+    /**
+     * Attempts to start cooking the next dish in the queue.
+     * <p>
+     * If the dish queue is empty or there are not enough ingredients at the workstation,
+     * the method does nothing and sets the chef to idle. Otherwise, it sets the current dish,
+     * consumes the required ingredients, and initializes the cooking timer.
+     */
+    private void prepareNextDish() {
+        if (dishQueue.isEmpty()) {
+            isCooking = false;
+            return;
+        }
+
+        if (workstation.getIngredients() <= dishConsumptionPerDish) {
+            isCooking = false;
+            return;
+        }
+
+        isCooking = true;
+        workstation.setIngredients(workstation.getIngredients() - dishConsumptionPerDish);
+        currentDish = dishQueue.getFirst();
+        timeNeededForDish = 3000;
+        setDishFinishedTime(timeNeededForDish);
+    }
+
+    private void setDishFinishedTime(int neededTime) {
         this.dishFinishedTime = this.elapsedTime + neededTime;
     }
 
-    public void addListener(HeadChefListener headChefListener){
-        headChefListeners.add(headChefListener);
-    }
-
-    public void removeListener(WaiterListener waiterListener){
-        headChefListeners.remove(waiterListener);
-    };
-
-    public void notifyListeners(Dish finishedDish){
-        for (HeadChefListener headChefListener : headChefListeners){
+    /**
+     * Notifies all registered head chef listeners that a dish is ready.
+     */
+    public void notifyListeners(Dish finishedDish) {
+        for (HeadChefListener headChefListener : headChefListeners) {
             headChefListener.receiveNotification(finishedDish);
         }
     }
 
+    public void addListener(HeadChefListener headChefListener) {
+        headChefListeners.add(headChefListener);
+    }
+
+    public void removeListener(HeadChefListener headChefListener) {
+        headChefListeners.remove(headChefListener);
+    }
+
+    // === Accessors ===
+    public boolean isCooking() { return isCooking; }
+    public float getProgressProportion() { return progressProportion; }
+    public Color getBodyColor() { return bodyColor; }
+    public int getDiameter() { return diameter; }
+    Enums.ChefType getChefType() { return chefType; }
 }

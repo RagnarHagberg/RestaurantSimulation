@@ -9,8 +9,8 @@ public class RestaurantMain extends JPanel {
     static final int WIDTH = 1200;
     static final int HEIGHT = 640;
 
-    private static int tableCount = 4;
-    private static int waiterCount = 1;
+    private static int tableCount = 6;
+    private static int waiterCount = 3;
 
     static ArrayList<Waiter> waiters = new ArrayList<Waiter>();
     static ArrayList<Table> tables = new ArrayList<Table>();
@@ -36,6 +36,8 @@ public class RestaurantMain extends JPanel {
     static GuestInstanceController guestInstanceController;
     static RestaurantQueue restaurantQueue;
 
+    static ArrayList<Updatable> updatables = new ArrayList<>();
+
     static void setupRestaurant(){
 
         restaurantQueue = new RestaurantQueue();
@@ -43,9 +45,9 @@ public class RestaurantMain extends JPanel {
 
         // Create menu
         // Might be moved to another file
-        ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>(Arrays.asList(new MenuItem("Fish fingers", 10, Enums.ChefType.SOUS),
-                new MenuItem("Meatballs", 5, Enums.ChefType.SOUS), new MenuItem("Bouef Bourgoignon", 12, Enums.ChefType.SOUS),
-                new MenuItem("Pink Cake", 7, Enums.ChefType.PASTRY), new MenuItem("Garlic bread", 3, Enums.ChefType.GARDEMANGER)));
+        ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>(Arrays.asList(new MenuItem("Fish fingers", 210, Enums.ChefType.SOUS),
+                new MenuItem("Meatballs", 190, Enums.ChefType.SOUS), new MenuItem("Bouef Bourgoignon", 200, Enums.ChefType.SOUS),
+                new MenuItem("Pink Cake", 125, Enums.ChefType.PASTRY), new MenuItem("Garlic bread", 90, Enums.ChefType.GARDEMANGER)));
         Menu menu1 = new Menu(menuItems);
 
         // create workstations
@@ -59,10 +61,11 @@ public class RestaurantMain extends JPanel {
 
         // create chefs
         prepChef = new PrepChef(10,100,50, Color.orange, sousStation, pastryStation, gardemangerStation);
+        updatables.add(prepChef);
 
-        pastryChef = new DishChef(200,550,70, Color.pink, Enums.ChefType.PASTRY, pastryStation);
-        gardemangerChef = new DishChef(200, 100, 50, Color.green, Enums.ChefType.GARDEMANGER, gardemangerStation);
-        sousChef = new DishChef(200, 400, 50, Color.yellow, Enums.ChefType.SOUS, sousStation);
+        pastryChef = new DishChef(200,550,70, Color.pink, Enums.ChefType.PASTRY, pastryStation, 400, 300);
+        gardemangerChef = new DishChef(200, 100, 50, Color.green, Enums.ChefType.GARDEMANGER, gardemangerStation, 400, 300);
+        sousChef = new DishChef(200, 400, 50, Color.yellow, Enums.ChefType.SOUS, sousStation, 400, 300);
 
         dishChefList.add(pastryChef);
         dishChefList.add(sousChef);
@@ -70,9 +73,11 @@ public class RestaurantMain extends JPanel {
 
         // create headchef with references to all chefs
         headChef = new HeadChef(400,300, sousChef, pastryChef, gardemangerChef);
+        updatables.add(headChef);
 
         // make the headchef a listener to all the chefs
         for (DishChef dishChef : dishChefList){
+            updatables.add(dishChef);
             dishChef.addListener(headChef);
         }
 
@@ -81,11 +86,16 @@ public class RestaurantMain extends JPanel {
         for (int j = 0; j<tableCount; j++){
             Table table = new Table(j);
             tables.add(table);
+            updatables.add(table);
         }
 
         // give headwaiter reference to all tables
         headWaiter = new HeadWaiter(1120, 150, restaurantQueue, tables);
+        updatables.add(headWaiter);
+
+
         guestInstanceController = new GuestInstanceController(restaurantQueue, headWaiter);
+        updatables.add(guestInstanceController);
 
         // create waiters
         for (int i = 0; i<waiterCount; i++){
@@ -95,23 +105,24 @@ public class RestaurantMain extends JPanel {
             waiter.setCurrentMenu(menu1);
             waiters.add(waiter);
             headChef.addListener(waiter);
+            updatables.add(waiter);
         }
 
 
         // Assign waiter to tables
         int waiterIndex = 0;
         int tablesPerWaiter = tableCount/waiterCount;
-        int tableCount = 0;
+        int tableAssignmentCounter  = 0;
 
         for (int i = 0; i < tables.size(); i++) {
             tables.get(i).addListener(waiters.get(waiterIndex));
 
             waiters.get(waiterIndex).addTableIndexToAssignedTableIndexes(i);
 
-            // Each waiter is assigned to two tablesPerWaiter before moving to the next waiter
-            tableCount += 1;
-            if(tableCount == tablesPerWaiter){
-                tableCount = 0;
+            // Each waiter is assigned to tablesPerWaiter of tables before moving to the next waiter
+            tableAssignmentCounter  += 1;
+            if(tableAssignmentCounter  == tablesPerWaiter){
+                tableAssignmentCounter  = 0;
                 waiterIndex += 1;
             }
         }
@@ -119,41 +130,14 @@ public class RestaurantMain extends JPanel {
 
     // Contains the simulation logic, should probably be broken into smaller pieces as the program expands
     static void update(int delta) {
-
-        // Update all visible objects
-        for (Waiter w : waiters) {
-            w.update(delta);
+        for (Updatable obj : updatables) {
+            obj.update(delta);
         }
 
-        for (Table t : tables) {
-            t.update(delta);
-        }
-
-        for (DishChef dishChef : dishChefList){
-            dishChef.update(delta);
-        }
-
-        if (prepChef != null){
-            prepChef.update(delta);
-        }
-
-        if (headChef != null){
-            headChef.update(delta);
-        }
-
-
-        guestInstanceController.update(delta);
-
+        // Special case for dynamically added guests
         for (Guest guest : guestInstanceController.getGuests()){
             guest.update(delta);
         }
-
-
-        headWaiter.update(delta);
-
-        //remove guests here
-
-        // ... similar updates for all other agents in the simulation.
     }
 
     @Override
@@ -206,7 +190,7 @@ public class RestaurantMain extends JPanel {
     static void drawSimulationData(Graphics g){
         int fontSize = 32;
         g.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
-        g.drawString(SimulationData.getInstance().getCrowns() + "kr", WIDTH-100, 100);
+        g.drawString(SimulationData.getInstance().getCrowns() + "kr", 10, 50);
     }
     static void drawTables(Graphics g) {
         for (Table table : tables) {
@@ -300,7 +284,7 @@ public class RestaurantMain extends JPanel {
 
     public static void main(String[] args) {
         // Create the frame
-        JFrame frame = new JFrame("Restuarant Simulation");
+        JFrame frame = new JFrame("Restaurant Simulation");
         frame.setSize(WIDTH, HEIGHT); // Set window size
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);

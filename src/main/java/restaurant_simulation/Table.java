@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPublisher{
+public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPublisher, Updatable{
 
 
     //TODO
@@ -24,6 +24,7 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
     private int timeForOrder = 1000000000;
     private int timeToLeave = 1000000000;
 
+    private int automaticLeaveTime = 300000;
     private int orderWaitTime = 10000;
     private int leaveWaitTime = 20000;
 
@@ -114,18 +115,24 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
         if (elapsedTime > timeToLeave){
 
             System.out.println("Table" + getTableNumber() + "has reached time for guests to leave" + "Time to leave!");
-            notifyListeners(Enums.TableSignal.GUESTSLEFT);
-
-            // set guests target to leave restaurant and reset guests.
-            for(Guest guest : guests){
-                // Guest leave
-                guest.setTargetToSpawn(1500,200);
-            }
-            resetTable();
-
-
-
+            makeGuestsLeave();
         }
+
+        if (elapsedTime > automaticLeaveTime){
+            System.out.println("Table : " + getTableNumber() + " - guests have to leave");
+            makeGuestsLeave();
+        }
+    }
+
+    private void makeGuestsLeave(){
+        notifyListeners(Enums.TableSignal.GUESTSLEFT);
+
+        // set guests target to leave restaurant and reset guests.
+        for(Guest guest : guests){
+            // Guest leave
+            guest.setTargetToSpawn(1500,200);
+        }
+        resetTable();
     }
 
     public void setCurrentMenu(Menu menu) {
@@ -144,8 +151,6 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
             SimulationData.getInstance().addCrowns((int) orderedItem.getPrice());
             orderList.add(orderedItem);
         }
-
-
 
         Order order = new Order(orderList, getTableNumber());
         savedOrder = order;
@@ -167,9 +172,6 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
         }
 
         // check if every ordered dish has arrived
-        if (savedOrder == null){
-            return;
-        }
         if (dishes.size() == savedOrder.getDishes().size()){
             timeToLeave = elapsedTime + leaveWaitTime;
             System.out.println("Table " + getTableNumber() + ": set time for guests to leave to" + timeToLeave);

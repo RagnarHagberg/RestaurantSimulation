@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * @author Ragnar Hagberg
  */
 
-public class Waiter extends CanvasObject implements WaiterListener {
+public class Waiter extends CanvasObject implements WaiterListener, Updatable {
     /** Represents the index of the waiter in relation to the other waiters created by the controller
     */
     private int waiterIndex;
@@ -23,6 +23,9 @@ public class Waiter extends CanvasObject implements WaiterListener {
     private int diameter = 50;
 
     private int walkSpeed = 10;
+
+    private static final int MIDDLE_Y = 320;
+    private static final int TARGET_THRESHOLD = 50;
 
 
     /** The X coordinate of the waiter's current target */
@@ -279,9 +282,9 @@ public class Waiter extends CanvasObject implements WaiterListener {
         }
 
 
-        int yDirectionToMiddle = (getY() < 320) ? 1 : -1;
+        int yDirectionToMiddle = (getY() < MIDDLE_Y) ? 1 : -1;
 
-        if (Math.abs(getY()-320) > 25 && !hasWalkedToMiddle){
+        if (Math.abs(getY()-MIDDLE_Y) > 25 && !hasWalkedToMiddle){
             setY(getY() + walkSpeed * yDirectionToMiddle);
             return;
         }
@@ -290,11 +293,11 @@ public class Waiter extends CanvasObject implements WaiterListener {
         }
 
         // first walk the x direction
-        if (Math.abs(getX()-targetX) > 50){
+        if (Math.abs(getX()-targetX) > TARGET_THRESHOLD){
             setX(getX() + walkSpeed * xDirectionToTarget);
         }
         // then walk in the y direction
-        else if (Math.abs(getY()-targetY) > 50){
+        else if (Math.abs(getY()-targetY) > TARGET_THRESHOLD){
             setY(getY() + walkSpeed * yDirectionToTarget);
             // walk y
         }

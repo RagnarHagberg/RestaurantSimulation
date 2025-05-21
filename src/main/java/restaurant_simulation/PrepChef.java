@@ -2,7 +2,7 @@ package restaurant_simulation;
 
 import java.awt.*;
 
-public class PrepChef extends CanvasObject{
+public class PrepChef extends CanvasObject implements Updatable{
 
     private int ingredients;
     private int batchSize = 100;
