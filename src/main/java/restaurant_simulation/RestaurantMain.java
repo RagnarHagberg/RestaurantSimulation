@@ -183,7 +183,10 @@ public class RestaurantMain extends JPanel {
 
         drawWorkstations(g);
 
-        drawGuests(g);
+        if (guestInstanceController != null){
+            drawGuests(g);
+        }
+
 
         drawHeadWaiter(g);
         // MORE CODE HERE

@@ -29,6 +29,7 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
         TABLE
     }
 
+    private Table currentTable;
     private Target currentTarget;
 
     private RestaurantQueue restaurantQueue;
@@ -131,6 +132,9 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
         else{
             switch (currentTarget) {
                 case TABLE:
+                    currentTable.setGuestPosition();
+                    currentTable = null;
+                    // set guest position
                     setTargetToSpawn(this.getSpawnX(), this.getSpawnY());
                     break;
                 case SPAWN:
@@ -177,9 +181,10 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
                     table.addGuest(guest);
                     guest.setTargetToTable(table.getX(), table.getY());
                     guest.setX(getX() - 50*i);
+                    guest.setY(getY() + 100);
                 }
 
-
+                currentTable = table;
                 setTargetToTable(table.getX(), table.getY());
                 // add guests to table
                 // walk to table

@@ -122,7 +122,7 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
                 for(Guest guest : guests){
                     // Guest leave
                     System.out.println("Guest leave");
-                    guest.setTargetToSpawn(1000,100);
+                    guest.setTargetToSpawn(1500,200);
                 }
 
                 resetTable();
@@ -188,7 +188,14 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
         }
     }
 
-
+    public void setGuestPosition(){
+        int i = 0;
+        for(Guest guest: guests){
+            guest.setX(getX()-30 + (i % 2) * 80);
+            guest.setY(getY() + Math.floorDiv(i,2) * 80);
+            i++;
+        }
+    }
     // reset the order, dish, menu state, time stamps
     public void resetTable(){
         guests.clear();

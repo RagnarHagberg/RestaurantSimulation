@@ -25,6 +25,7 @@ public class RestaurantQueue {
         ArrayList<Guest> firstGuests = new ArrayList<>(sublist);
 
         guests.removeAll(firstGuests);
+        setGuestsPosition();
 
         return firstGuests;
     }

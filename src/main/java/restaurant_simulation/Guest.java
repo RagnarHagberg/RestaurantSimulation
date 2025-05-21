@@ -113,7 +113,7 @@ public class Guest extends CanvasObject{
         else{
             switch (currentTarget) {
                 case TABLE:
-                    currentTarget = null;
+                    //currentTarget = null;
                     return;
                 case SPAWN:
                     notifyListeners();
