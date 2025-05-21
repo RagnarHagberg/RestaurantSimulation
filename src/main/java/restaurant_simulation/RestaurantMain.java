@@ -6,6 +6,12 @@ import java.util.Arrays;
 
 public class RestaurantMain extends JPanel {
 
+    static final int WIDTH = 1200;
+    static final int HEIGHT = 640;
+
+    private static int tableCount = 4;
+    private static int waiterCount = 1;
+
     static ArrayList<Waiter> waiters = new ArrayList<Waiter>();
     static ArrayList<Table> tables = new ArrayList<Table>();
     static HeadChef headChef;
@@ -44,7 +50,7 @@ public class RestaurantMain extends JPanel {
 
         // create workstations
         gardemangerStation = new ChefWorkstation(300, 50, 70, 50);
-        pastryStation = new ChefWorkstation(10, 350, 70, 50);
+        pastryStation = new ChefWorkstation(300, 500, 70, 50);
         sousStation = new ChefWorkstation(300, 350, 70, 50);
 
         workstationList.add(gardemangerStation);
@@ -54,7 +60,7 @@ public class RestaurantMain extends JPanel {
         // create chefs
         prepChef = new PrepChef(10,100,50, Color.orange, sousStation, pastryStation, gardemangerStation);
 
-        pastryChef = new DishChef(10,400,70, Color.pink, Enums.ChefType.PASTRY, pastryStation);
+        pastryChef = new DishChef(200,550,70, Color.pink, Enums.ChefType.PASTRY, pastryStation);
         gardemangerChef = new DishChef(200, 100, 50, Color.green, Enums.ChefType.GARDEMANGER, gardemangerStation);
         sousChef = new DishChef(200, 400, 50, Color.yellow, Enums.ChefType.SOUS, sousStation);
 
@@ -72,7 +78,7 @@ public class RestaurantMain extends JPanel {
 
 
         // create tables
-        for (int j = 0; j<6; j++){
+        for (int j = 0; j<tableCount; j++){
             Table table = new Table(j);
             tables.add(table);
         }
@@ -82,7 +88,7 @@ public class RestaurantMain extends JPanel {
         guestInstanceController = new GuestInstanceController(restaurantQueue, headWaiter);
 
         // create waiters
-        for (int i = 0; i<3; i++){
+        for (int i = 0; i<waiterCount; i++){
             Waiter waiter = new Waiter(i);
             waiter.setTables(tables);
             waiter.setChef(headChef);
@@ -94,7 +100,7 @@ public class RestaurantMain extends JPanel {
 
         // Assign waiter to tables
         int waiterIndex = 0;
-        int tablesPerWaiter = 2;
+        int tablesPerWaiter = tableCount/waiterCount;
         int tableCount = 0;
 
         for (int i = 0; i < tables.size(); i++) {
@@ -188,11 +194,20 @@ public class RestaurantMain extends JPanel {
         }
 
 
-        drawHeadWaiter(g);
+        if (headWaiter != null){
+            drawHeadWaiter(g);
+        }
+
+        drawSimulationData(g);
         // MORE CODE HERE
     }
 
 
+    static void drawSimulationData(Graphics g){
+        int fontSize = 32;
+        g.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
+        g.drawString(SimulationData.getInstance().getCrowns() + "kr", WIDTH-100, 100);
+    }
     static void drawTables(Graphics g) {
         for (Table table : tables) {
             g.setColor(Color.RED);
@@ -217,7 +232,7 @@ public class RestaurantMain extends JPanel {
             g.setColor(Color.BLACK);
             g.fillOval(guest.getX(), guest.getY(), guest.getDiameter(), guest.getDiameter());
             g.setColor(Color.WHITE);
-            g.fillOval(guest.getX()+7, guest.getY()+7, guest.getDiameter()-14, guest.getDiameter()-14); // Draw circle with diameter of 50 pixels
+            g.fillOval(guest.getX()+2, guest.getY()+2, guest.getDiameter()-4, guest.getDiameter()-4); // Draw circle with diameter of 50 pixels
             g.setColor(Color.BLACK);
         }
     }
@@ -286,7 +301,7 @@ public class RestaurantMain extends JPanel {
     public static void main(String[] args) {
         // Create the frame
         JFrame frame = new JFrame("Restuarant Simulation");
-        frame.setSize(1200, 640); // Set window size
+        frame.setSize(WIDTH, HEIGHT); // Set window size
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
 
@@ -306,7 +321,7 @@ public class RestaurantMain extends JPanel {
             } catch (Exception threadException) {
                 System.out.println("Sleep exception: " + threadException.getMessage());
             }
-            update(delta);
+            update(delta*5);
             panel.repaint();
         }
     }

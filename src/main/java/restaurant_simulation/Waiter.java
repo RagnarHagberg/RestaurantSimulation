@@ -155,7 +155,7 @@ public class Waiter extends CanvasObject implements WaiterListener {
 
         switch (currentInstruction.getAction()){
             case REQUESTTOORDER:
-                chef.addOrder(currentOrder);
+                chef.addOrder(currentInstruction.getCurrentOrder());
                 finishCurrentInstruction();
                 break;
             case DELIVERDISH:
@@ -205,7 +205,7 @@ public class Waiter extends CanvasObject implements WaiterListener {
      * @param table The table to take an order from
      */
     private void takeOrder(Table table){
-        currentOrder = table.makeRandomOrder();
+        currentInstruction.setCurrentOrder(table.makeRandomOrder());
         // orderList.forEach(menuItem -> System.out.println(menuItem.courseName));
     }
 
@@ -378,7 +378,7 @@ public class Waiter extends CanvasObject implements WaiterListener {
      * Removes the completed instruction from the queue and moves to the next one.
      */
     private void finishCurrentInstruction(){
-        instructionQueue.remove(currentInstruction);
+        instructionQueue.removeFirst();
         executeNextInstruction();
     }
 

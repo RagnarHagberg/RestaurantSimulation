@@ -113,21 +113,16 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
 
         if (elapsedTime > timeToLeave){
 
-            if (!haveGuestsLeft){
-                System.out.println("Time ot leave!");
-                notifyListeners(Enums.TableSignal.GUESTSLEFT);
+            System.out.println("Table" + getTableNumber() + "has reached time for guests to leave" + "Time to leave!");
+            notifyListeners(Enums.TableSignal.GUESTSLEFT);
 
-                System.out.println(guests.size());
-                // set guests target to leave restaurant and reset guests.
-                for(Guest guest : guests){
-                    // Guest leave
-                    System.out.println("Guest leave");
-                    guest.setTargetToSpawn(1500,200);
-                }
-
-                resetTable();
-                haveGuestsLeft = true;
+            // set guests target to leave restaurant and reset guests.
+            for(Guest guest : guests){
+                // Guest leave
+                guest.setTargetToSpawn(1500,200);
             }
+            resetTable();
+
 
 
         }
@@ -146,8 +141,11 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
 
         for (int i = 0; i < amountOfGuests; i++) {
             MenuItem orderedItem = currentMenu.selectRandomItem();
+            SimulationData.getInstance().addCrowns((int) orderedItem.getPrice());
             orderList.add(orderedItem);
         }
+
+
 
         Order order = new Order(orderList, getTableNumber());
         savedOrder = order;
@@ -158,13 +156,23 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
     public void addDish(Dish newDish){
         dishes.add(newDish);
 
+        System.out.println("New dish arrived to table " + getTableNumber() + "Dishes received are now: " + dishes.size());
+        System.out.println("Wanted amount of dishes at table " + getTableNumber() + "is : " + savedOrder.getDishes().size());
+
+        for (Dish dish : dishes){
+            System.out.println("Has received: " + dish.courseName);
+        }
+        for (MenuItem menuItem : savedOrder.getDishes()){
+            System.out.println("Has ordered: " + menuItem.getCourseName());
+        }
+
         // check if every ordered dish has arrived
         if (savedOrder == null){
             return;
         }
         if (dishes.size() == savedOrder.getDishes().size()){
             timeToLeave = elapsedTime + leaveWaitTime;
-            System.out.println(timeToLeave);
+            System.out.println("Table " + getTableNumber() + ": set time for guests to leave to" + timeToLeave);
         }
     }
 

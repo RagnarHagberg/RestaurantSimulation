@@ -2,11 +2,11 @@ package restaurant_simulation;
 
 public class MenuItem {
 
-    String courseName;
-    double price;
+    private String courseName;
+    private int price;
     Enums.ChefType targetChef;
 
-    MenuItem(String courseName, double price, Enums.ChefType targetChef){
+    MenuItem(String courseName, int price, Enums.ChefType targetChef){
         this.courseName = courseName;
         this.price = price;
         this.targetChef = targetChef;
@@ -14,5 +14,13 @@ public class MenuItem {
 
     Enums.ChefType getTargetChef() {
         return this.targetChef;
+    }
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public int getPrice() {
+        return price;
     }
 }

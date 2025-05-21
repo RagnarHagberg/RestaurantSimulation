@@ -35,7 +35,7 @@ public class HeadChef extends CanvasObject implements WaiterPublisher, HeadChefL
         Order currentOrder = orders.getFirst();
         // Sort the dishes in the order to the correct Chef and task the chef to make the dish
         for (MenuItem menuItem : currentOrder.getDishes()){
-            Dish currentDish = new Dish(menuItem.courseName, currentOrder.getTableOriginIndex());
+            Dish currentDish = new Dish(menuItem.getCourseName(), currentOrder.getTableOriginIndex());
 
             // set strategy to chef strategy
             DishChef currentChef = switch (menuItem.getTargetChef()) {
@@ -47,7 +47,7 @@ public class HeadChef extends CanvasObject implements WaiterPublisher, HeadChefL
             currentChef.addDish(currentDish);
         }
 
-        orders.remove(currentOrder);
+        orders.removeFirst();
         if (!orders.isEmpty()){
             instructChefs();
         }
@@ -75,10 +75,20 @@ public class HeadChef extends CanvasObject implements WaiterPublisher, HeadChefL
         for(WaiterListener waiterListener : waiterListeners){
             Waiter currentWaiter = (Waiter) waiterListener;
             if (currentWaiter.getAssignedTableIndexes().contains(instruction.getTableNumber())){
+                System.out.println("Waiter assigned");
                 waiterListener.receiveNotification(instruction);
+                return;
             }
 
         }
+        System.out.println("WAITER NOT ASSIGNED");
+
+        System.out.println("WAITER NOT ASSIGNED");
+
+        System.out.println("WAITER NOT ASSIGNED");
+        System.out.println("WAITER NOT ASSIGNED");
+
+
     }
 
     // Receive that a dish is finished from the chefs

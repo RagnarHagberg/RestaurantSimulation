@@ -63,13 +63,13 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
             // If assignGuestsToTable() didn’t set a new target
             if (currentTarget == null && previousTarget != null) {
                 // Optional: log that there was no guest to assign
-                System.out.println("No new target set, remaining idle.");
+                //System.out.println("No new target set, remaining idle.");
             }
         }
     }
 
     private void setTarget(Target target, int x, int y){
-        System.out.println("Changed target");
+        //System.out.println("Changed target");
         this.currentTarget = target;
         hasWalkedToMiddle = false;
 
@@ -164,7 +164,7 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener {
 
         for(Table table : tables){
             if (table.isEmpty()){
-                System.out.println("found empty table");
+                //System.out.println("found empty table");
                 // tables is empty
                 // this function also removes the guests from the queue.
 

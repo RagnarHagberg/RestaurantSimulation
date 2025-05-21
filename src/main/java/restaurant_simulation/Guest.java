@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Guest extends CanvasObject{
 
-    private int diameter = 30;
+    private int diameter = 17;
     private int elapsedTime = 0;
 
     private int targetX;
@@ -34,7 +34,7 @@ public class Guest extends CanvasObject{
     }
 
     private void notifyListeners(){
-        System.out.println("Removed guest from self");
+        //System.out.println("Removed guest from self");
         instanceListener.getFirst().guestRemoved(this);
     }
 

@@ -62,7 +62,7 @@ public class DishChef extends CanvasObject {
             return;
         }
 
-        if (workstation.getIngredients() < dishConsumptionPerDish){
+        if (workstation.getIngredients() <= dishConsumptionPerDish){
             isCooking = false;
             return;
         }
@@ -97,12 +97,13 @@ public class DishChef extends CanvasObject {
         // send finished dish to head chef
         progressProportion = 0;
 
-        dishQueue.remove(currentDish);
+        dishQueue.removeFirst();
         isCooking = false;
 
         // Walk to head chef and back before preparing next dish
         // The head chef will be noticed when the chef arrives
         isWalkingToHeadChef = true;
+        isWalkingToSpawn = false;
 
         // the next dish will be prepared when the character arrives at spawn
     }
@@ -123,6 +124,7 @@ public class DishChef extends CanvasObject {
                 return;
             }
             if (isWalkingToSpawn){
+                isWalkingToHeadChef = false;
                 isWalkingToSpawn = false;
                 prepareNextDish();
                 return;
@@ -141,10 +143,16 @@ public class DishChef extends CanvasObject {
     public void update(int delta){
         elapsedTime += delta;
 
+        System.out.println(chefType + "has " + dishQueue.size() + "dishes left");
 
-        if (workstation.getIngredients() > 10 && !isWalkingToHeadChef && !isWalkingToSpawn &&!isCooking){
+        if (workstation.getIngredients() >= dishConsumptionPerDish && !isWalkingToHeadChef && !isWalkingToSpawn &&!isCooking){
             prepareNextDish();
-
+        } else if (!dishQueue.isEmpty()){
+            System.out.println("Couldn't cook");
+            System.out.println("Iswalkingtoheadchef" + isWalkingToHeadChef);
+            System.out.println("iswalkingtospawn" + isWalkingToSpawn);
+            System.out.println("isCooking" + isCooking);
+            System.out.println("Ingredients: " + workstation.getIngredients());
         }
 
         if (isWalkingToHeadChef){
@@ -152,7 +160,7 @@ public class DishChef extends CanvasObject {
             walkToVector(headChefVector);
         }
 
-        if (isWalkingToSpawn){
+        else if (isWalkingToSpawn){
             RVector spawnVector = new RVector(getSpawnX(),getSpawnY(), 0);
             walkToVector(spawnVector);
         }

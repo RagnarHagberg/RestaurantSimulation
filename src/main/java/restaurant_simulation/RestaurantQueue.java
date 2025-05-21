@@ -20,7 +20,6 @@ public class RestaurantQueue {
         return guests.size();
     }
     public ArrayList<Guest> getNextGuests(int amount){
-        System.out.println(guests.size());
         List<Guest> sublist = guests.subList(0, amount);
         ArrayList<Guest> firstGuests = new ArrayList<>(sublist);
 
