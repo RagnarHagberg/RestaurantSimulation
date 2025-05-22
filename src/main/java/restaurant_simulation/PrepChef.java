@@ -2,7 +2,11 @@ package restaurant_simulation;
 
 import java.awt.*;
 
-public class PrepChef extends CanvasObject implements Updatable{
+/**
+ * Represents the prepChef in the chef,
+ * who is responsible for delivering ingredients to the other chefs.
+ */
+public class PrepChef extends CanvasObject implements Updatable, Progressbarable{
 
     private int ingredients;
     private int batchSize = 100;
@@ -31,7 +35,21 @@ public class PrepChef extends CanvasObject implements Updatable{
     private int diameter;
     private Color bodyColor;
 
+    private float progressProportion;
 
+
+    /**
+     * Constructs the prepChef based on the following properties.
+     * Has references to the workstations where ingredients must be delivered.
+     * The constructor instantly starts making ingredients after creation.
+     * @param spawnX the original X-position of the prepchef, where it preps.
+     * @param spawnY the original Y-position of the prepchef, where it preps.
+     * @param diameter the diameter of the chef's body for rendering purposes.
+     * @param bodyColor the color of the chef's body for rendering purposes.
+     * @param sousWorkstation the reference to the workstation of the souschef.
+     * @param pastryWorkstation the reference to the workstation of the pastry chef.
+     * @param gardemangerWorkstation the reference to the workstation of the gardemanger.
+     */
     PrepChef(int spawnX, int spawnY, int diameter, Color bodyColor, ChefWorkstation sousWorkstation, ChefWorkstation pastryWorkstation, ChefWorkstation gardemangerWorkstation) {
         super(spawnX, spawnY);
         this.diameter = diameter;
@@ -54,26 +72,46 @@ public class PrepChef extends CanvasObject implements Updatable{
         return ingredients;
     }
 
+    /**
+     * Starts a timer for creating ingredients
+     */
     private void prepareIngredients(){
         finishTime = elapsedTime + cookTime;
         isPreparing = true;
     }
 
+    /**
+     * Called when the timer for creating ingredients has finished.
+     * The function then starts the delivery process to the workstations.
+     */
     private void ingredientsFinished(){
+        progressProportion = 0;
         isPreparing = false;
         ingredientToWorkstationDeliverySize = Math.floorDiv(batchSize,3);
         startDelivery();
     }
 
+    /**
+     * Arbitrarely sets the first chef to deliver to the souschef
+     * and changes state of the chef.
+     */
     private void startDelivery(){
         isDistributing = true;
         target = Target.SOUS;
     }
 
+    /**
+     * Updates the chef's state every frame.
+     * Calls the walking functionality depending on the state of the chef.
+     * Calculates the progress of the dish-making if the chef is cooking, for rendering purposes.
+     * @param delta time passed since last update
+     */
     public void update(int delta){
         elapsedTime += delta;
 
         if (isPreparing){
+            progressProportion = (float) (cookTime - (finishTime - elapsedTime)) / cookTime;
+
             if (elapsedTime > finishTime){
                 ingredientsFinished();
             }
@@ -149,4 +187,7 @@ public class PrepChef extends CanvasObject implements Updatable{
         }
 
     }
+
+    public float getProgressProportion() { return progressProportion; }
+
 }

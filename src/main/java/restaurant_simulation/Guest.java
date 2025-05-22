@@ -1,5 +1,6 @@
 package restaurant_simulation;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -13,6 +14,8 @@ public class Guest extends CanvasObject implements Updatable {
 
     private int targetX;
     private int targetY;
+
+    private Color color;
 
     private ArrayList<GuestInstanceControllerListener> instanceListener = new ArrayList<>();
 
@@ -33,6 +36,7 @@ public class Guest extends CanvasObject implements Updatable {
 
     Guest(int x, int y){
         super(x, y);
+        color = new Color((int)(Math.random() * 0x1000000));
     }
 
     /**
@@ -131,5 +135,9 @@ public class Guest extends CanvasObject implements Updatable {
                     break;
             }
         }
+    }
+
+    public Color getColor() {
+        return color;
     }
 }

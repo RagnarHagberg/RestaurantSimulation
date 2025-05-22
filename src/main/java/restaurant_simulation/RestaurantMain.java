@@ -9,8 +9,18 @@ public class RestaurantMain extends JPanel {
     static final int WIDTH = 1200;
     static final int HEIGHT = 640;
 
-    private static int tableCount = 6;
-    private static int waiterCount = 3;
+    private static int SOUSSTATIONSPAWNX = 0;
+    private static int SOUSSTATIONSPAWNY = 250;
+
+    private static int GARDEMANGERSTATIONSPAWNX = 300;
+    private static int GARDEMANGERSTATIONSPAWNY = 0;
+
+    private static int PASTRYSTATIONSPAWNX = 0;
+    private static int PASTRYSTATIONSPAWNY = 450;
+
+    private static int PREPSTATIONSPAWNX = 0;
+    private static int PREPSTATIONSPAWNY = 50;
+
 
     static ArrayList<Waiter> waiters = new ArrayList<Waiter>();
     static ArrayList<Table> tables = new ArrayList<Table>();
@@ -31,17 +41,17 @@ public class RestaurantMain extends JPanel {
     static ChefWorkstation sousStation;
     static ChefWorkstation pastryStation;
     static ChefWorkstation gardemangerStation;
+    static ChefWorkstation prepStation;
     static ArrayList<ChefWorkstation> workstationList = new ArrayList<ChefWorkstation>();
 
     static GuestInstanceController guestInstanceController;
     static RestaurantQueue restaurantQueue;
 
     static ArrayList<Updatable> updatables = new ArrayList<>();
+    static ArrayList<Progressbarable> progressbarables = new ArrayList<>();
 
     static void setupRestaurant(){
-
         restaurantQueue = new RestaurantQueue();
-
 
         // Create menu
         // Might be moved to another file
@@ -51,21 +61,24 @@ public class RestaurantMain extends JPanel {
         Menu menu1 = new Menu(menuItems);
 
         // create workstations
-        gardemangerStation = new ChefWorkstation(300, 50, 70, 50);
-        pastryStation = new ChefWorkstation(300, 500, 70, 50);
-        sousStation = new ChefWorkstation(300, 350, 70, 50);
+        gardemangerStation = new ChefWorkstation(GARDEMANGERSTATIONSPAWNX, GARDEMANGERSTATIONSPAWNY, 70, 50);
+        pastryStation = new ChefWorkstation(PASTRYSTATIONSPAWNX, PASTRYSTATIONSPAWNY, 70, 50);
+        sousStation = new ChefWorkstation(SOUSSTATIONSPAWNX, SOUSSTATIONSPAWNY, 70, 50);
+        prepStation = new ChefWorkstation(PREPSTATIONSPAWNX, PREPSTATIONSPAWNY, 70, 50);
 
         workstationList.add(gardemangerStation);
         workstationList.add(pastryStation);
         workstationList.add(sousStation);
+        workstationList.add(prepStation);
 
         // create chefs
         prepChef = new PrepChef(10,100,50, Color.orange, sousStation, pastryStation, gardemangerStation);
         updatables.add(prepChef);
+        progressbarables.add(prepChef);
 
-        pastryChef = new DishChef(200,550,70, Color.pink, Enums.ChefType.PASTRY, pastryStation, 400, 300);
-        gardemangerChef = new DishChef(200, 100, 50, Color.green, Enums.ChefType.GARDEMANGER, gardemangerStation, 400, 300);
-        sousChef = new DishChef(200, 400, 50, Color.yellow, Enums.ChefType.SOUS, sousStation, 400, 300);
+        pastryChef = new DishChef(PASTRYSTATIONSPAWNX + 50,PASTRYSTATIONSPAWNY + 50,70, Color.pink, Enums.ChefType.PASTRY, pastryStation, 400, 300);
+        gardemangerChef = new DishChef(GARDEMANGERSTATIONSPAWNX + 50, GARDEMANGERSTATIONSPAWNY + 50, 50, Color.green, Enums.ChefType.GARDEMANGER, gardemangerStation, 400, 300);
+        sousChef = new DishChef(SOUSSTATIONSPAWNX + 50, SOUSSTATIONSPAWNY + 50, 50, Color.yellow, Enums.ChefType.SOUS, sousStation, 400, 300);
 
         dishChefList.add(pastryChef);
         dishChefList.add(sousChef);
@@ -78,13 +91,21 @@ public class RestaurantMain extends JPanel {
         // make the headchef a listener to all the chefs
         for (DishChef dishChef : dishChefList){
             updatables.add(dishChef);
+            progressbarables.add(dishChef);
             dishChef.addListener(headChef);
         }
 
 
         // create tables
-        for (int j = 0; j<tableCount; j++){
-            Table table = new Table(j);
+        for (int j = 0; j<SimulationData.getInstance().getAMOUNT_OF_TABLES(); j++){
+
+            int lines = 4;
+            int distanceBetweenTablesX = (int) ((WIDTH - 540)/( Math.ceil((float) SimulationData.getInstance().getAMOUNT_OF_TABLES()/ (float)lines)));
+            int distanceBetweenTablesY = (int) (Math.ceil((float) HEIGHT/(float)lines));
+            int tableSpawnX = 540 + Math.floorDiv(j,lines) * distanceBetweenTablesX;
+            int tableSpawnY = (j % lines) * distanceBetweenTablesY;
+
+            Table table = new Table(tableSpawnX,tableSpawnY, j);
             tables.add(table);
             updatables.add(table);
         }
@@ -98,7 +119,7 @@ public class RestaurantMain extends JPanel {
         updatables.add(guestInstanceController);
 
         // create waiters
-        for (int i = 0; i<waiterCount; i++){
+        for (int i = 0; i<SimulationData.getInstance().getAMOUNT_OF_WAITERS(); i++){
             Waiter waiter = new Waiter(i);
             waiter.setTables(tables);
             waiter.setChef(headChef);
@@ -111,7 +132,7 @@ public class RestaurantMain extends JPanel {
 
         // Assign waiter to tables
         int waiterIndex = 0;
-        int tablesPerWaiter = tableCount/waiterCount;
+        int tablesPerWaiter = (int) Math.ceil((float) SimulationData.getInstance().getAMOUNT_OF_TABLES()/ (float)SimulationData.getInstance().getAMOUNT_OF_WAITERS());
         int tableAssignmentCounter  = 0;
 
         for (int i = 0; i < tables.size(); i++) {
@@ -121,7 +142,7 @@ public class RestaurantMain extends JPanel {
 
             // Each waiter is assigned to tablesPerWaiter of tables before moving to the next waiter
             tableAssignmentCounter  += 1;
-            if(tableAssignmentCounter  == tablesPerWaiter){
+            if(tableAssignmentCounter == tablesPerWaiter){
                 tableAssignmentCounter  = 0;
                 waiterIndex += 1;
             }
@@ -144,7 +165,8 @@ public class RestaurantMain extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        setBackground(new Color(255, 245, 158, 184)); //  // Set the background color to light yellow
+
+        setBackground(Color.decode("#286CD4")); //  // Set the background color to light yellow
 
         g.setColor(Color.DARK_GRAY); // Set the color for the border lines
         g.drawRect(500, 0, 600, getHeight() - 5);
@@ -170,6 +192,7 @@ public class RestaurantMain extends JPanel {
 
         // draw the dishchefs and prepchef
         drawChefs(g);
+        drawProgressbarables(g);
 
         drawWorkstations(g);
 
@@ -186,6 +209,21 @@ public class RestaurantMain extends JPanel {
         // MORE CODE HERE
     }
 
+    static void drawProgressbarables(Graphics g){
+        for (Progressbarable progressbarable : progressbarables){
+            if (progressbarable.getProgressProportion() == 0){
+                continue;
+            }
+
+            int startX = progressbarable.getX();
+            int width = 50;
+            g.setColor(Color.black);
+            g.fillRect(startX, progressbarable.getY() - 50, width, 30);
+            g.setColor(Color.green);
+            g.fillRect(startX + 5, progressbarable.getY() - 45, (int) ((width - 10) * progressbarable.getProgressProportion()), 20);
+
+        }
+    }
 
     static void drawSimulationData(Graphics g){
         int fontSize = 32;
@@ -194,12 +232,14 @@ public class RestaurantMain extends JPanel {
     }
     static void drawTables(Graphics g) {
         for (Table table : tables) {
-            g.setColor(Color.RED);
+            g.setColor(Color.decode("#6D6B5E"));
             g.fillOval(table.getX(), table.getY(), table.getDiameter(), table.getDiameter()); // Draw circle with diameter of 50 pixels
-            g.setColor(Color.WHITE);
+            g.setColor(Color.decode("#663D22"));
             g.fillOval(table.getX()+3, table.getY()+3, table.getDiameter()-6, table.getDiameter()-6);
             g.setColor(Color.BLACK);
-            g.drawString(String.valueOf(table.getTableNumber()), table.getX()+30,  table.getY()+35);
+            int fontSize = 16;
+            g.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
+            g.drawString(String.valueOf(table.getTableNumber()), table.getX() + table.getDiameter()/2,  table.getY() + table.getDiameter()/2);
         }
     }
 
@@ -215,7 +255,7 @@ public class RestaurantMain extends JPanel {
         for (Guest guest: guestInstanceController.getGuests()){
             g.setColor(Color.BLACK);
             g.fillOval(guest.getX(), guest.getY(), guest.getDiameter(), guest.getDiameter());
-            g.setColor(Color.WHITE);
+            g.setColor(guest.getColor());
             g.fillOval(guest.getX()+2, guest.getY()+2, guest.getDiameter()-4, guest.getDiameter()-4); // Draw circle with diameter of 50 pixels
             g.setColor(Color.BLACK);
         }
@@ -223,7 +263,7 @@ public class RestaurantMain extends JPanel {
 
     static void drawWorkstations(Graphics g) {
         for (ChefWorkstation workstation : workstationList) {
-            g.setColor(Color.WHITE);
+            g.setColor(Color.DARK_GRAY);
             g.fillRect(workstation.getX(), workstation.getY(), workstation.getWidth(), workstation.getHeight());
         }
     }
@@ -257,18 +297,7 @@ public class RestaurantMain extends JPanel {
             g.setColor(dishChef.getBodyColor());
             g.fillOval(dishChef.getX()+7, dishChef.getY()+7, dishChef.getDiameter()-14, dishChef.getDiameter()-14);
             g.setColor(Color.BLACK);
-            g.drawString(dishChef.getChefType().name(), dishChef.getX()+25, dishChef.getY()+60);
-
-            // Draw progress bar
-
-            if (dishChef.isCooking()) {
-                int startX = dishChef.getX();
-                int width = 50;
-                g.setColor(Color.black);
-                g.fillRect(startX, dishChef.getY() - 50, width, 30);
-                g.setColor(Color.green);
-                g.fillRect(startX + 5, dishChef.getY() - 45, (int) ((width - 10) * dishChef.getProgressProportion()), 20);
-            }
+            g.drawString(dishChef.getChefType().name(), dishChef.getX(), dishChef.getY());
         }
 
         if (prepChef != null){

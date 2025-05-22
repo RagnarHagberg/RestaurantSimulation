@@ -17,7 +17,6 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
      */
     private int diameter = 50;
     private int tableNumber;
-    private int amountOfGuests = 4;
 
     private int elapsedTime;
 
@@ -44,25 +43,18 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
     private ArrayList<Dish> dishes = new ArrayList<>();
     private ArrayList<Guest> guests = new ArrayList<>();
 
-
-
     private Order savedOrder;
 
-    Table(int tableNumber){
-        super(625 + Math.floorDiv(tableNumber,2) * 150, (tableNumber % 2) * 500);
+    Table(int x, int y, int tableNumber){
+        super(x, y);
         this.tableNumber = tableNumber;
 
-        //Random random = new Random();
-        //amountOfGuests = random.nextInt(1,6);
     }
 
     public boolean isEmpty() {
         return empty;
     }
 
-    public int getAmountOfGuests() {
-        return amountOfGuests;
-    }
 
     public void addGuest(Guest guest){
         guests.add(guest);
@@ -146,7 +138,7 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
     public Order makeRandomOrder(){
         ArrayList<MenuItem> orderList = new ArrayList<>();
 
-        for (int i = 0; i < amountOfGuests; i++) {
+        for (int i = 0; i < guests.size(); i++) {
             MenuItem orderedItem = currentMenu.selectRandomItem();
             SimulationData.getInstance().addCrowns((int) orderedItem.getPrice());
             orderList.add(orderedItem);
@@ -202,7 +194,7 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
         int i = 0;
         for(Guest guest: guests){
             guest.setX(getX()-30 + (i % 2) * 80);
-            guest.setY(getY() + Math.floorDiv(i,2) * 80);
+            guest.setY(getY() + Math.floorDiv(i,SimulationData.getInstance().getGUESTS_PER_TABLE()/3) * 40);
             i++;
         }
     }

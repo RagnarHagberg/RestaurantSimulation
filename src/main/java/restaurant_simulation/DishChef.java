@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * Handles movement between the spawn point and the head chef, manages a queue of dishes,
  * and simulates cooking with time-based updates.
  */
-public class DishChef extends CanvasObject implements Updatable {
+public class DishChef extends CanvasObject implements Updatable, Progressbarable {
     private int diameter;
     private Color bodyColor;
 
@@ -109,7 +109,8 @@ public class DishChef extends CanvasObject implements Updatable {
 
     /**
      * Updates the chef's state every frame.
-     *
+     * Calls the walking functionality depending on the state of the chef.
+     * Calculates the progress of the dish-making if the chef is cooking, for rendering purposes.
      * @param delta time passed since last update
      */
     public void update(int delta) {

@@ -178,7 +178,7 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener, Upd
     }
 
     /**
-     * Attempts to assign the next 4 guests to an available empty table.
+     * Attempts to assign the next guests to an available empty table.
      * If assigned, begins walking toward the table.
      */
     // also call when the queue has been updated
@@ -193,7 +193,7 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener, Upd
                 // tables is empty
                 // this function also removes the guests from the queue.
 
-                if (restaurantQueue.getGuestsInQueue() < 4){
+                if (restaurantQueue.getGuestsInQueue() < SimulationData.getInstance().getGUESTS_PER_TABLE()){
                     return;
                 }
 

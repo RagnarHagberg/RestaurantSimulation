@@ -5,11 +5,9 @@ import java.util.List;
 
 /**
  * Represents the Head Chef in the restaurant simulation.
- * <p>
  * The HeadChef is responsible for managing dish orders, delegating cooking tasks
  * to specialized chefs (Sous, Pastry, Gardemanger), and notifying waiters when
  * dishes are ready for delivery.
- * </p>
  *
  */
 public class HeadChef extends CanvasObject implements WaiterPublisher, HeadChefListener, Updatable {
