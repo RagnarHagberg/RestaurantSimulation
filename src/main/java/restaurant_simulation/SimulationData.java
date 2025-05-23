@@ -5,11 +5,12 @@ public final class SimulationData {
     private static SimulationData INSTANCE;
     private int crowns = 0;
 
-    private int GUESTS_PER_TABLE = 6;
+    private int GUESTS_PER_TABLE = 8;
 
     private int AMOUNT_OF_TABLES = 8;
 
-    private int AMOUNT_OF_WAITERS = 3;
+    private int AMOUNT_OF_WAITERS = 5;
+    private int ROWS_OF_TABLES = 2;
 
     private SimulationData() {
     }
@@ -50,5 +51,13 @@ public final class SimulationData {
 
     public void setAMOUNT_OF_TABLES(int AMOUNT_OF_TABLES) {
         this.AMOUNT_OF_TABLES = AMOUNT_OF_TABLES;
+    }
+
+    public int getROWS_OF_TABLES() {
+        return ROWS_OF_TABLES;
+    }
+
+    public void setROWS_OF_TABLES(int ROWS_OF_TABLES) {
+        this.ROWS_OF_TABLES = ROWS_OF_TABLES;
     }
 }

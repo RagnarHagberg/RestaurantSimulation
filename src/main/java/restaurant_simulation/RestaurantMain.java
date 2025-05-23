@@ -99,7 +99,7 @@ public class RestaurantMain extends JPanel {
         // create tables
         for (int j = 0; j<SimulationData.getInstance().getAMOUNT_OF_TABLES(); j++){
 
-            int lines = 4;
+            int lines = SimulationData.getInstance().getROWS_OF_TABLES();
             int distanceBetweenTablesX = (int) ((WIDTH - 540)/( Math.ceil((float) SimulationData.getInstance().getAMOUNT_OF_TABLES()/ (float)lines)));
             int distanceBetweenTablesY = (int) (Math.ceil((float) HEIGHT/(float)lines));
             int tableSpawnX = 540 + Math.floorDiv(j,lines) * distanceBetweenTablesX;

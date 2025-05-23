@@ -58,6 +58,10 @@ public class Guest extends CanvasObject implements Updatable {
         return diameter;
     }
 
+    public void setTargetToNull(){
+        currentTarget = null;
+    }
+
     public void update(int delta) {
         elapsedTime += delta;
 

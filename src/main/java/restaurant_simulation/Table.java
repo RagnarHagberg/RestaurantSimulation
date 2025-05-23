@@ -192,9 +192,19 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
 
     public void setGuestPosition(){
         int i = 0;
+        double part = (2 * Math.PI)/guests.size();
+        int r = getDiameter() / 2;
+        int cx = getX() + r;
+        int cy = getY () + r;
         for(Guest guest: guests){
-            guest.setX(getX()-30 + (i % 2) * 80);
-            guest.setY(getY() + Math.floorDiv(i,SimulationData.getInstance().getGUESTS_PER_TABLE()/3) * 40);
+
+            guest.setTargetToNull();
+            guest.setX(- guest.getDiameter()/2 + cx + (int) (r * Math.cos(part*i)));
+            guest.setY(- guest.getDiameter()/2 + cy + (int) (r * Math.sin(part*i)));
+
+            System.out.println(Math.cos((float) Math.PI/ (float) i));
+            //guest.setX(getX()-30 + (i % 2) * 80);
+            //guest.setY(getY() + Math.floorDiv(i,SimulationData.getInstance().getGUESTS_PER_TABLE()/3) * 40);
             i++;
         }
     }
