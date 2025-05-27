@@ -2,7 +2,6 @@ package restaurant_simulation;
 
 /**
  * Represents a base object with a position on the canvas.
- * <p>
  * Stores both the current position and the original spawn position.
  * Serves as a superclass for visual or movable entities in the simulation.
  */

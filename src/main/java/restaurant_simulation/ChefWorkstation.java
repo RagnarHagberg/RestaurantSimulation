@@ -2,7 +2,6 @@ package restaurant_simulation;
 
 /**
  * Represents a chef's workstation in the restaurant simulation.
- * <p>
  * Each workstation has a defined width and height, and tracks the amount of ingredients available.
  */
 public class ChefWorkstation extends CanvasObject {

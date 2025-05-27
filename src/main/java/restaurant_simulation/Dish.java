@@ -2,7 +2,6 @@ package restaurant_simulation;
 
 /**
  * Represents a single dish in the restaurant simulation.
- * <p>
  * A dish is associated with a course name and the table that ordered it.
  */
 public class Dish {

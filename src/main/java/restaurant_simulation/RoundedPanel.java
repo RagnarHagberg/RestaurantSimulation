@@ -3,6 +3,9 @@ package restaurant_simulation;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Class for creating a custom JPanel with rounded corners.
+ */
 class RoundedPanel extends JPanel {
     private int cornerRadius;
 
