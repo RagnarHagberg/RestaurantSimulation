@@ -20,6 +20,10 @@ public class Dish {
         this.tableOriginIndex = tableOriginIndex;
     }
 
+    public String getCourseName() {
+        return courseName;
+    }
+
     public int getTableOriginIndex() {
         return tableOriginIndex;
     }

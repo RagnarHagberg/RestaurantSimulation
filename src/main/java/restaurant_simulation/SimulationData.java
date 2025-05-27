@@ -1,25 +1,35 @@
 package restaurant_simulation;
 
+/**
+ * Singleton class that holds simulation configuration data and state.
+ */
 public final class SimulationData {
 
     private static SimulationData INSTANCE;
     private int crowns = 0;
 
-    private int GUESTS_PER_TABLE = 8;
+    // Configuration parameters
+    private int GUESTS_PER_TABLE = 10;
+    private int AMOUNT_OF_TABLES = 12;
+    private int AMOUNT_OF_WAITERS = 2;
+    private int ROWS_OF_TABLES = 3;
 
-    private int AMOUNT_OF_TABLES = 8;
-
-    private int AMOUNT_OF_WAITERS = 5;
-    private int ROWS_OF_TABLES = 2;
-
+    /**
+     * Private constructor to enforce singleton pattern.
+     */
     private SimulationData() {
     }
 
+    /**
+     * Returns the singleton instance of {@code SimulationData}.
+     * If it does not exist, it is created.
+     *
+     * @return the singleton instance
+     */
     public static SimulationData getInstance() {
-        if(INSTANCE == null) {
+        if (INSTANCE == null) {
             INSTANCE = new SimulationData();
         }
-
         return INSTANCE;
     }
 
@@ -27,15 +37,18 @@ public final class SimulationData {
         return crowns;
     }
 
+    /**
+     * Adds the specified amount to the current crown total.
+     *
+     * @param crowns the number of crowns to add
+     */
     public void addCrowns(int crowns) {
         this.crowns += crowns;
     }
 
-
     public int getGUESTS_PER_TABLE() {
         return GUESTS_PER_TABLE;
     }
-
 
     public int getAMOUNT_OF_WAITERS() {
         return AMOUNT_OF_WAITERS;

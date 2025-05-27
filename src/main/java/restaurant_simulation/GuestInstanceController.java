@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public class GuestInstanceController implements GuestInstanceControllerListener, Updatable {
 
-    private int maxGuests = 24;
+    private int maxGuests = 100;
     private int elapsedTime = 0;
     private int previousCreationTimeStamp;
 

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class RestaurantMain extends JPanel {
-
     static final int WIDTH = 1200;
     static final int HEIGHT = 640;
 

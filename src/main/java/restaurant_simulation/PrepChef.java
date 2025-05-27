@@ -92,7 +92,7 @@ public class PrepChef extends CanvasObject implements Updatable, Progressbarable
     }
 
     /**
-     * Arbitrarely sets the first chef to deliver to the souschef
+     * Arbitrarily sets the first chef to deliver to the souschef
      * and changes state of the chef.
      */
     private void startDelivery(){
@@ -126,6 +126,10 @@ public class PrepChef extends CanvasObject implements Updatable, Progressbarable
         }
     }
 
+    /**
+     * Helper-Function for changing the target after arriving at specific workstations,
+     * in order to fulfill the delivery loop.
+     */
     private void arrivedAtWorkstation(){
         switch (target){
             case SOUS:
@@ -143,10 +147,13 @@ public class PrepChef extends CanvasObject implements Updatable, Progressbarable
                 target = null;
                 break;
         }
-
-        // workstation order [sous, pastry, gardemanger]
-
     }
+
+    /**
+     * Calculate the direction to another vector and then
+     * update the position of the chef in the direction of the vector, with a length of walkspeed.
+     * @param otherVector
+     */
     private void walkToVector(RVector otherVector){
         RVector chefVector = new RVector(getX(),getY(),0);
         RVector subtractedVector = otherVector.subtractVector(chefVector);
@@ -173,18 +180,17 @@ public class PrepChef extends CanvasObject implements Updatable, Progressbarable
         setY(getY() + (int) scaledVector.getB());
     }
 
+    /**
+     * Set the targetVector to the position of current target-workstations,
+     * and walk to the targetVector.
+     */
     private void distributeIngredients(){
-        switch (target){
-            case SOUS:
-                walkToVector(new RVector(sousWorkstation.getX(), sousWorkstation.getY(), 0));
-                break;
-            case PASTRY:
-                walkToVector(new RVector(pastryWorkstation.getX(), pastryWorkstation.getY(), 0));
-                break;
-            case GARDEMANGER:
-                walkToVector(new RVector(gardemangerWorkstation.getX(), gardemangerWorkstation.getY(), 0));
-                break;
-        }
+        RVector targetVector = switch (target) {
+            case SOUS -> new RVector(sousWorkstation.getX(), sousWorkstation.getY(), 0);
+            case PASTRY -> new RVector(pastryWorkstation.getX(), pastryWorkstation.getY(), 0);
+            case GARDEMANGER -> new RVector(gardemangerWorkstation.getX(), gardemangerWorkstation.getY(), 0);
+        };
+        walkToVector(targetVector);
 
     }
 

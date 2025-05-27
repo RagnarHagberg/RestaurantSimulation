@@ -141,7 +141,7 @@ public class HeadChef extends CanvasObject implements WaiterPublisher, HeadChefL
             if (currentWaiter.getAssignedTableIndexes().contains(instruction.getTableNumber())) {
                 System.out.println("Waiter assigned");
                 waiterListener.receiveNotification(instruction);
-                return;
+                break;
             }
         }
     }

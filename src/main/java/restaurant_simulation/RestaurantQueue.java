@@ -3,23 +3,52 @@ package restaurant_simulation;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Manages a queue of guests waiting to be seated in the restaurant.
+ */
 public class RestaurantQueue {
+    /**
+     * The list of guests currently in the queue.
+     */
     private ArrayList<Guest> guests = new ArrayList<>();
 
-    public void addGuest(Guest guest){
+    /**
+     * Adds a guest to the end of the queue and updates guest positions.
+     *
+     * @param guest the guest to add
+     */
+    public void addGuest(Guest guest) {
         guests.add(guest);
         setGuestsPosition();
     }
 
-    public void removeGuest(Guest guest){
+    /**
+     * Removes a guest from the queue and updates guest positions.
+     *
+     * @param guest the guest to remove
+     */
+    public void removeGuest(Guest guest) {
         guests.remove(guest);
         setGuestsPosition();
     }
 
-    public int getGuestsInQueue(){
+    /**
+     * Returns the number of guests currently in the queue.
+     *
+     * @return the number of guests in the queue
+     */
+    public int getGuestsInQueue() {
         return guests.size();
     }
-    public ArrayList<Guest> getNextGuests(int amount){
+
+    /**
+     * Retrieves the specified number of guests from the front of the queue and
+     * removes them from the queue.
+     *
+     * @param amount the number of guests to retrieve
+     * @return a list containing the first amount guests in the queue
+     */
+    public ArrayList<Guest> getNextGuests(int amount) {
         List<Guest> sublist = guests.subList(0, amount);
         ArrayList<Guest> firstGuests = new ArrayList<>(sublist);
 
@@ -29,11 +58,15 @@ public class RestaurantQueue {
         return firstGuests;
     }
 
-    private void setGuestsPosition(){
+    /**
+     * Updates the position of each guest in the queue.
+     * This is typically used to visually arrange guests in the simulation.
+     */
+    private void setGuestsPosition() {
         int index = 0;
-        for(Guest guest : guests){
+        for (Guest guest : guests) {
             guest.setX(1130);
-            guest.setY(300 + index*50);
+            guest.setY(300 + index * 50);
             index += 1;
         }
     }
