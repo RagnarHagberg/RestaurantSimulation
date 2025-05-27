@@ -69,7 +69,7 @@ public class RestaurantApp {
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 36));
         titleLabel.setForeground(white);
 
-        JLabel descriptionLabel = new JLabel("Fine tune the workings of your restaurant", SwingConstants.CENTER);
+        JLabel descriptionLabel = new JLabel("Build your restaurant", SwingConstants.CENTER);
         descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         descriptionLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         descriptionLabel.setForeground(white);
@@ -85,15 +85,15 @@ public class RestaurantApp {
         sliderContainerPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         sliderContainerPanel.add(createSliderPanel("Dish price", 1, 5, 3, secondaryBlue, primaryBlue, white));
-        sliderContainerPanel.add(createSliderPanel("Amount of waiters", 1, 5, 1, secondaryBlue, primaryBlue, white));
-        sliderContainerPanel.add(createSliderPanel("Amount of tables", 1, 8, 2, secondaryBlue, primaryBlue, white));
-        sliderContainerPanel.add(createSliderPanel("Rows of tables", 1, 4, 1, secondaryBlue, primaryBlue, white));
+        sliderContainerPanel.add(createSliderPanel("Amount of waiters", 1, 4, 1, secondaryBlue, primaryBlue, white));
+        sliderContainerPanel.add(createSliderPanel("Amount of tables", 1, 8, 4, secondaryBlue, primaryBlue, white));
+        sliderContainerPanel.add(createSliderPanel("Rows of tables", 1, 4, 2, secondaryBlue, primaryBlue, white));
         sliderContainerPanel.add(createSliderPanel("Chef speed", 1, 5, 3, secondaryBlue, primaryBlue, white));
-        sliderContainerPanel.add(createSliderPanel("Customers per table", 1, 10, 5, secondaryBlue, primaryBlue, white));
+        sliderContainerPanel.add(createSliderPanel("Customers per table", 1, 10, 4, secondaryBlue, primaryBlue, white));
 
         panel.add(sliderContainerPanel);
 
-        JButton startButton = new JButton("Start simulation");
+        JButton startButton = new JButton("Start simulation!");
         startButton.addActionListener(e -> {
             // Save settings to file
             saveSettings(FILEPATH);

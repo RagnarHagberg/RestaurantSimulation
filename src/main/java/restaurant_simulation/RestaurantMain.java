@@ -138,7 +138,15 @@ public class RestaurantMain extends JPanel {
 
             int lines = SimulationData.getInstance().getROWS_OF_TABLES();
             int distanceBetweenTablesX = (int) ((WIDTH - 540)/( Math.ceil((float) SimulationData.getInstance().getAMOUNT_OF_TABLES()/ (float)lines)));
-            int distanceBetweenTablesY = (int) (Math.ceil((float) HEIGHT/(float)lines));
+            int distanceBetweenTablesY;
+
+            if (lines == 2){
+                distanceBetweenTablesY = (int) (Math.ceil((float) (HEIGHT-100)/(float)Math.min(lines-1, 1)));
+
+            }
+            else{
+                distanceBetweenTablesY = (int) (Math.ceil((float) (HEIGHT-100)/(float)lines));
+            }
             int tableSpawnX = 540 + Math.floorDiv(j,lines) * distanceBetweenTablesX;
             int tableSpawnY = (j % lines) * distanceBetweenTablesY;
 
