@@ -230,15 +230,19 @@ public class RestaurantMain extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        setBackground(Color.decode("#286CD4")); // Set the background color to light yellow
+        setBackground(Color.decode("#286CD4")); // Set the background color to blue
 
-        g.setColor(Color.DARK_GRAY); // Set the color for the borderlines
-        g.drawRect(500, 0, 600, getHeight() - 5);
-        g.setColor(Color.BLACK);
-        g.drawRect(500, 0, 695, getHeight() - 5);
+        g.setColor(Color.LIGHT_GRAY); // Set the color for the borderlines
+        // draw wall between serving room and kitchen
+        g.fillRect(490, 0, 10, getHeight()-5);
+        // draw wall between the serving room and the foyer
+        g.fillRect(1090, 0, 10, getHeight()-5);
+        g.setColor(Color.decode("#964B00")); // Set the color for the outer wall
+        g.fillRect(1100, 0, 5, getHeight()-5);
+
 
         // Draw kitchen door
-        g.setColor(Color.DARK_GRAY);
+        g.setColor(Color.RED);
         g.fillRect(490, 270, 20, 100);
         g.fillRect(1090, 270, 20, 100);
 
@@ -255,7 +259,6 @@ public class RestaurantMain extends JPanel {
 
         // draw the dishchefs and prepchef
         drawChefs(g);
-        drawProgressbarables(g);
 
         drawWorkstations(g);
 
@@ -268,6 +271,8 @@ public class RestaurantMain extends JPanel {
         }
 
         drawSimulationData(g);
+        drawProgressbarables(g);
+
     }
 
     /**
@@ -301,7 +306,7 @@ public class RestaurantMain extends JPanel {
     static void drawSimulationData(Graphics g){
         int fontSize = 32;
         g.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
-        g.drawString(SimulationData.getInstance().getCrowns() + "kr", 10, 50);
+        g.drawString(SimulationData.getInstance().getCrowns() + "kr", 10, 30);
     }
 
     /**

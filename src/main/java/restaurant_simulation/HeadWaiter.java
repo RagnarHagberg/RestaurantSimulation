@@ -23,7 +23,7 @@ public class HeadWaiter extends CanvasObject implements  HeadWaiterListener, Upd
     private boolean hasWalkedToMiddle = false;
 
     private static final int MIDDLE_Y = 320;
-    private static final int TARGET_THRESHOLD = 50;
+    private static final int TARGET_THRESHOLD = 10;
 
     private enum Target {
         /** A position outside the restaurant */
