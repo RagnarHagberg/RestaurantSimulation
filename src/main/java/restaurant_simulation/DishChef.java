@@ -53,6 +53,7 @@ public class DishChef extends CanvasObject implements Updatable, Progressbarable
         this.workstation = workstation;
         this.headChefX = headChefX;
         this.headChefY = headChefY;
+        timeNeededForDish = 5000/SimulationData.getInstance().getCHEF_SPEED_MULTIPLIER();
     }
 
     /**
@@ -139,7 +140,6 @@ public class DishChef extends CanvasObject implements Updatable, Progressbarable
 
     /**
      * Attempts to start cooking the next dish in the queue.
-     * <p>
      * If the dish queue is empty or there are not enough ingredients at the workstation,
      * the method does nothing and sets the chef to idle. Otherwise, it sets the current dish,
      * consumes the required ingredients, and initializes the cooking timer.
@@ -158,7 +158,6 @@ public class DishChef extends CanvasObject implements Updatable, Progressbarable
         isCooking = true;
         workstation.setIngredients(workstation.getIngredients() - dishConsumptionPerDish);
         currentDish = dishQueue.getFirst();
-        timeNeededForDish = 3000;
         setDishFinishedTime(timeNeededForDish);
     }
 

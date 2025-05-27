@@ -8,6 +8,7 @@ public class RestaurantMain extends JPanel {
     static final int WIDTH = 1200;
     static final int HEIGHT = 640;
 
+
     private static int SOUSSTATIONSPAWNX = 0;
     private static int SOUSSTATIONSPAWNY = 250;
 
@@ -20,14 +21,10 @@ public class RestaurantMain extends JPanel {
     private static int PREPSTATIONSPAWNX = 0;
     private static int PREPSTATIONSPAWNY = 50;
 
-
     static ArrayList<Waiter> waiters = new ArrayList<Waiter>();
     static ArrayList<Table> tables = new ArrayList<Table>();
     static HeadChef headChef;
 
-    static int delta = 33;
-    // In here all objects that are needed for operating the restaurant should be created.
-    // This is initialisation and determines the initial state of the program.
 
     static PrepChef prepChef;
     static DishChef pastryChef;
@@ -54,10 +51,17 @@ public class RestaurantMain extends JPanel {
 
         // Create menu
         // Might be moved to another file
-        ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>(Arrays.asList(new MenuItem("Fish fingers", 210, Enums.ChefType.SOUS),
-                new MenuItem("Meatballs", 190, Enums.ChefType.SOUS), new MenuItem("Bouef Bourgoignon", 200, Enums.ChefType.SOUS),
-                new MenuItem("Pink Cake", 125, Enums.ChefType.PASTRY), new MenuItem("Garlic bread", 90, Enums.ChefType.GARDEMANGER)));
+        ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>(Arrays.asList(
+                new MenuItem("Fish fingers",
+                        70*SimulationData.getInstance().getDISH_PRICE_MULTIPLIER(), Enums.ChefType.SOUS),
+                new MenuItem("Meatballs",
+                        55*SimulationData.getInstance().getDISH_PRICE_MULTIPLIER(), Enums.ChefType.SOUS),
+                new MenuItem("Bouef Bourgoignon",
+                        65*SimulationData.getInstance().getDISH_PRICE_MULTIPLIER(), Enums.ChefType.SOUS),
+                new MenuItem("Pink Cake",
+                        45*SimulationData.getInstance().getDISH_PRICE_MULTIPLIER(), Enums.ChefType.PASTRY), new MenuItem("Garlic bread", 20, Enums.ChefType.GARDEMANGER)));
         Menu menu1 = new Menu(menuItems);
+
 
         // create workstations
         gardemangerStation = new ChefWorkstation(GARDEMANGERSTATIONSPAWNX, GARDEMANGERSTATIONSPAWNY, 70, 50);
@@ -94,7 +98,6 @@ public class RestaurantMain extends JPanel {
             dishChef.addListener(headChef);
         }
 
-
         // create tables
         for (int j = 0; j<SimulationData.getInstance().getAMOUNT_OF_TABLES(); j++){
 
@@ -113,7 +116,6 @@ public class RestaurantMain extends JPanel {
         headWaiter = new HeadWaiter(1120, 150, restaurantQueue, tables);
         updatables.add(headWaiter);
 
-
         guestInstanceController = new GuestInstanceController(restaurantQueue, headWaiter);
         updatables.add(guestInstanceController);
 
@@ -128,7 +130,6 @@ public class RestaurantMain extends JPanel {
             updatables.add(waiter);
         }
 
-
         // Assign waiter to tables
         int waiterIndex = 0;
         int tablesPerWaiter = (int) Math.ceil((float) SimulationData.getInstance().getAMOUNT_OF_TABLES()/ (float)SimulationData.getInstance().getAMOUNT_OF_WAITERS());
@@ -136,7 +137,6 @@ public class RestaurantMain extends JPanel {
 
         for (int i = 0; i < tables.size(); i++) {
             tables.get(i).addListener(waiters.get(waiterIndex));
-
             waiters.get(waiterIndex).addTableIndexToAssignedTableIndexes(i);
 
             // Each waiter is assigned to tablesPerWaiter of tables before moving to the next waiter
@@ -164,12 +164,10 @@ public class RestaurantMain extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-
-        setBackground(Color.decode("#286CD4")); //  // Set the background color to light yellow
+        setBackground(Color.decode("#286CD4")); // Set the background color to light yellow
 
         g.setColor(Color.DARK_GRAY); // Set the color for the border lines
         g.drawRect(500, 0, 600, getHeight() - 5);
-        //g.drawRect(800, 0, getWidth() - 5, getHeight() - 5);
         g.setColor(Color.BLACK);
         g.drawRect(500, 0, 695, getHeight() - 5);
 
@@ -199,13 +197,11 @@ public class RestaurantMain extends JPanel {
             drawGuests(g);
         }
 
-
         if (headWaiter != null){
             drawHeadWaiter(g);
         }
 
         drawSimulationData(g);
-        // MORE CODE HERE
     }
 
     static void drawProgressbarables(Graphics g){
@@ -220,7 +216,6 @@ public class RestaurantMain extends JPanel {
             g.fillRect(startX, progressbarable.getY() - 50, width, 30);
             g.setColor(Color.green);
             g.fillRect(startX + 5, progressbarable.getY() - 45, (int) ((width - 10) * progressbarable.getProgressProportion()), 20);
-
         }
     }
 
@@ -229,6 +224,7 @@ public class RestaurantMain extends JPanel {
         g.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
         g.drawString(SimulationData.getInstance().getCrowns() + "kr", 10, 50);
     }
+
     static void drawTables(Graphics g) {
         for (Table table : tables) {
             g.setColor(Color.decode("#6D6B5E"));
@@ -285,11 +281,9 @@ public class RestaurantMain extends JPanel {
         g.fillOval(headChef.getX()+7, headChef.getY()+7, headChef.getDiameter()-14, headChef.getDiameter()-14);
         g.setColor(Color.BLACK);
         g.drawString("Head Chef", headChef.getX()+30,  headChef.getY()+35);
-
     }
 
     static void drawChefs(Graphics g){
-
         for(DishChef dishChef : dishChefList){
             g.setColor(Color.black);
             g.fillOval(dishChef.getX(), dishChef.getY(), dishChef.getDiameter(), dishChef.getDiameter());
@@ -310,31 +304,5 @@ public class RestaurantMain extends JPanel {
         }
     }
 
-    public static void main(String[] args) {
-        // Create the frame
-        JFrame frame = new JFrame("Restaurant Simulation");
-        frame.setSize(WIDTH, HEIGHT); // Set window size
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
 
-        // Add the custom panel (with circles) to the frame
-        RestaurantMain panel = new RestaurantMain();
-        frame.add(panel);
-
-        // Display the window
-        frame.setVisible(true);
-
-        // Setup for the restaurant
-        setupRestaurant();
-
-        while (true) {
-            try {
-                Thread.sleep(delta); // With the goal of having about 30 fps.
-            } catch (Exception threadException) {
-                System.out.println("Sleep exception: " + threadException.getMessage());
-            }
-            update(delta*5);
-            panel.repaint();
-        }
-    }
 }

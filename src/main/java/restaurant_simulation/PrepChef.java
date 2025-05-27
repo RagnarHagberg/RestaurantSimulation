@@ -11,7 +11,7 @@ public class PrepChef extends CanvasObject implements Updatable, Progressbarable
     private int ingredients;
     private int batchSize = 100;
     private int ingredientToWorkstationDeliverySize;
-    private int cookTime = 5000;
+    private int cookTime;
     private int finishTime;
 
     private boolean isPreparing;
@@ -57,6 +57,7 @@ public class PrepChef extends CanvasObject implements Updatable, Progressbarable
         this.sousWorkstation = sousWorkstation;
         this.pastryWorkstation = pastryWorkstation;
         this.gardemangerWorkstation = gardemangerWorkstation;
+        cookTime = 15000/SimulationData.getInstance().getCHEF_SPEED_MULTIPLIER();
         prepareIngredients();
     }
 

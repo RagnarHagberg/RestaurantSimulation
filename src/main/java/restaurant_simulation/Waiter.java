@@ -22,7 +22,7 @@ public class Waiter extends CanvasObject implements WaiterListener, Updatable {
     /** The diameter of the waiter's visual representation */
     private int diameter = 50;
 
-    private int walkSpeed = 10;
+    private int walkSpeed = 5;
 
     private static final int MIDDLE_Y = 320;
     private static final int TARGET_THRESHOLD = 50;

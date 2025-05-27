@@ -9,10 +9,13 @@ public final class SimulationData {
     private int crowns = 0;
 
     // Configuration parameters
-    private int GUESTS_PER_TABLE = 10;
-    private int AMOUNT_OF_TABLES = 12;
+    private int GUESTS_PER_TABLE = 2;
+    private int AMOUNT_OF_TABLES = 2;
+    private int ROWS_OF_TABLES = 1;
     private int AMOUNT_OF_WAITERS = 2;
-    private int ROWS_OF_TABLES = 3;
+    private int DISH_PRICE_MULTIPLIER = 3;
+    private int CHEF_SPEED_MULTIPLIER = 3;
+
 
     /**
      * Private constructor to enforce singleton pattern.
@@ -50,6 +53,10 @@ public final class SimulationData {
         return GUESTS_PER_TABLE;
     }
 
+    public void setGUESTS_PER_TABLE(int GUESTS_PER_TABLE) {
+        this.GUESTS_PER_TABLE = GUESTS_PER_TABLE;
+    }
+
     public int getAMOUNT_OF_WAITERS() {
         return AMOUNT_OF_WAITERS;
     }
@@ -72,5 +79,21 @@ public final class SimulationData {
 
     public void setROWS_OF_TABLES(int ROWS_OF_TABLES) {
         this.ROWS_OF_TABLES = ROWS_OF_TABLES;
+    }
+
+    public int getDISH_PRICE_MULTIPLIER() {
+        return DISH_PRICE_MULTIPLIER;
+    }
+
+    public void setDISH_PRICE_MULTIPLIER(int DISH_PRICE_MULTIPLIER) {
+        this.DISH_PRICE_MULTIPLIER = DISH_PRICE_MULTIPLIER;
+    }
+
+    public int getCHEF_SPEED_MULTIPLIER() {
+        return CHEF_SPEED_MULTIPLIER;
+    }
+
+    public void setCHEF_SPEED_MULTIPLIER(int CHEF_SPEED_MULTIPLIER) {
+        this.CHEF_SPEED_MULTIPLIER = CHEF_SPEED_MULTIPLIER;
     }
 }
