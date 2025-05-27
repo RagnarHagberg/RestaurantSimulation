@@ -4,64 +4,99 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Main class for the restaurant simulation that extends JPanel to provide graphical representation.
+ * This class handles the setup, update logic, and rendering of all restaurant components including
+ * chefs, waiters, tables, guests, and workstations.
+ *
+ * The simulation displays a restaurant layout with a kitchen area on the left and dining area on the right,
+ * separated by doors. Various staff members move around performing their duties while guests are seated
+ * and served at tables.
+ */
 public class RestaurantMain extends JPanel {
+    /** Width of the simulation window in pixels */
     static final int WIDTH = 1200;
+    /** Height of the simulation window in pixels */
     static final int HEIGHT = 640;
 
-
+    /** X coordinate for sous chef workstation spawn location */
     private static int SOUSSTATIONSPAWNX = 0;
+    /** Y coordinate for sous chef workstation spawn location */
     private static int SOUSSTATIONSPAWNY = 250;
 
+    /** X coordinate for garde manger workstation spawn location */
     private static int GARDEMANGERSTATIONSPAWNX = 300;
+    /** Y coordinate for garde manger workstation spawn location */
     private static int GARDEMANGERSTATIONSPAWNY = 0;
 
+    /** X coordinate for pastry workstation spawn location */
     private static int PASTRYSTATIONSPAWNX = 0;
+    /** Y coordinate for pastry workstation spawn location */
     private static int PASTRYSTATIONSPAWNY = 450;
 
+    /** X coordinate for prep workstation spawn location */
     private static int PREPSTATIONSPAWNX = 0;
+    /** Y coordinate for prep workstation spawn location */
     private static int PREPSTATIONSPAWNY = 50;
 
+    /** Collection of all waiters in the restaurant */
     static ArrayList<Waiter> waiters = new ArrayList<Waiter>();
+    /** Collection of all tables in the restaurant */
     static ArrayList<Table> tables = new ArrayList<Table>();
+    /** The head chef who coordinates all kitchen activities */
     static HeadChef headChef;
 
-
+    /** The prep chef responsible for ingredient preparation */
     static PrepChef prepChef;
+    /** The pastry chef specializing in desserts and baked goods */
     static DishChef pastryChef;
+    /** The garde manger chef handling cold dishes and appetizers */
     static DishChef gardemangerChef;
+    /** The sous chef assisting with main dishes */
     static DishChef sousChef;
+    /** Collection of all dish chefs for easy iteration */
     static ArrayList<DishChef> dishChefList = new ArrayList<DishChef>();
 
+    /** The head waiter who manages table assignments and guest seating */
     static HeadWaiter headWaiter;
 
     static ChefWorkstation sousStation;
     static ChefWorkstation pastryStation;
     static ChefWorkstation gardemangerStation;
     static ChefWorkstation prepStation;
+
+    /** Collection of all workstations for easy iteration */
     static ArrayList<ChefWorkstation> workstationList = new ArrayList<ChefWorkstation>();
 
+    /** Controller for managing guest instances and their lifecycle */
     static GuestInstanceController guestInstanceController;
+    /** Queue system for managing waiting guests */
     static RestaurantQueue restaurantQueue;
 
+    /** Collection of all objects that need to be updated each frame */
     static ArrayList<Updatable> updatables = new ArrayList<>();
+    /** Collection of all objects that display progress bars */
     static ArrayList<Progressbarable> progressbarables = new ArrayList<>();
 
+    /**
+     * Sets up the entire restaurant simulation by initializing all components including
+     * workstations, chefs, tables, waiters, and guest management systems.
+     *
+     * This method:
+     * - Creates the restaurant queue and menu
+     * - Initializes all chef workstations at their designated positions
+     * - Creates and configures all types of chefs with their specializations
+     * - Sets up the head chef to coordinate kitchen activities
+     * - Creates tables based on simulation data configuration
+     * - Initializes the head waiter and guest controller
+     * - Creates waiters and assigns them to specific tables
+     * - Establishes listener relationships between components
+     */
     static void setupRestaurant(){
         restaurantQueue = new RestaurantQueue();
 
         // Create menu
-        // Might be moved to another file
-        ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>(Arrays.asList(
-                new MenuItem("Fish fingers",
-                        70*SimulationData.getInstance().getDISH_PRICE_MULTIPLIER(), Enums.ChefType.SOUS),
-                new MenuItem("Meatballs",
-                        55*SimulationData.getInstance().getDISH_PRICE_MULTIPLIER(), Enums.ChefType.SOUS),
-                new MenuItem("Bouef Bourgoignon",
-                        65*SimulationData.getInstance().getDISH_PRICE_MULTIPLIER(), Enums.ChefType.SOUS),
-                new MenuItem("Pink Cake",
-                        45*SimulationData.getInstance().getDISH_PRICE_MULTIPLIER(), Enums.ChefType.PASTRY), new MenuItem("Garlic bread", 20, Enums.ChefType.GARDEMANGER)));
-        Menu menu1 = new Menu(menuItems);
-
+        Menu menu1 = getMenu();
 
         // create workstations
         gardemangerStation = new ChefWorkstation(GARDEMANGERSTATIONSPAWNX, GARDEMANGERSTATIONSPAWNY, 70, 50);
@@ -148,7 +183,34 @@ public class RestaurantMain extends JPanel {
         }
     }
 
-    // Contains the simulation logic, should probably be broken into smaller pieces as the program expands
+    /**
+     * Creates and returns the restaurant's menu with various dishes and their prices.
+     * Prices are multiplied by the simulation's dish price multiplier for scaling.
+     * @return Menu object containing all available menu items with their prices and chef assignments
+     */
+    private static Menu getMenu() {
+        ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>(Arrays.asList(
+                new MenuItem("Fish fingers",
+                        70*SimulationData.getInstance().getDISH_PRICE_MULTIPLIER(), Enums.ChefType.SOUS),
+                new MenuItem("Meatballs",
+                        55*SimulationData.getInstance().getDISH_PRICE_MULTIPLIER(), Enums.ChefType.SOUS),
+                new MenuItem("Bouef Bourgoignon",
+                        65*SimulationData.getInstance().getDISH_PRICE_MULTIPLIER(), Enums.ChefType.SOUS),
+                new MenuItem("Pink Cake",
+                        45*SimulationData.getInstance().getDISH_PRICE_MULTIPLIER(), Enums.ChefType.PASTRY), new MenuItem("Garlic bread", 20, Enums.ChefType.GARDEMANGER)));
+        return new Menu(menuItems);
+    }
+
+    /**
+     * Updates all simulation components by calling their update methods.
+     * This method is called each frame to advance the simulation state.
+     *
+     * Updates include:
+     * - All registered updatable objects (chefs, waiters, tables, etc.)
+     * - Dynamically created guests through the guest instance controller
+     *
+     * @param delta Time elapsed since last update in milliseconds
+     */
     static void update(int delta) {
         for (Updatable obj : updatables) {
             obj.update(delta);
@@ -160,13 +222,17 @@ public class RestaurantMain extends JPanel {
         }
     }
 
+    /**
+     * Custom paint method that renders the entire restaurant simulation.
+     * @param g Graphics context for rendering
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         setBackground(Color.decode("#286CD4")); // Set the background color to light yellow
 
-        g.setColor(Color.DARK_GRAY); // Set the color for the border lines
+        g.setColor(Color.DARK_GRAY); // Set the color for the borderlines
         g.drawRect(500, 0, 600, getHeight() - 5);
         g.setColor(Color.BLACK);
         g.drawRect(500, 0, 695, getHeight() - 5);
@@ -204,6 +270,13 @@ public class RestaurantMain extends JPanel {
         drawSimulationData(g);
     }
 
+    /**
+     * Draws progress bars for all objects that implement the Progressbarable interface.
+     * Progress bars appear above the object showing completion status of current tasks.
+     * Only draws progress bars for objects with progress greater than 0.
+     *
+     * @param g Graphics context for rendering
+     */
     static void drawProgressbarables(Graphics g){
         for (Progressbarable progressbarable : progressbarables){
             if (progressbarable.getProgressProportion() == 0){
@@ -219,12 +292,22 @@ public class RestaurantMain extends JPanel {
         }
     }
 
+    /**
+     * Draws the simulation data including the current money earned by the restaurant.
+     * Displays in the top-left corner of the screen.
+     *
+     * @param g Graphics context for rendering
+     */
     static void drawSimulationData(Graphics g){
         int fontSize = 32;
         g.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
         g.drawString(SimulationData.getInstance().getCrowns() + "kr", 10, 50);
     }
 
+    /**
+     * Draws all tables in the dining area as circular shapes with table numbers.
+     * @param g Graphics context for rendering
+     */
     static void drawTables(Graphics g) {
         for (Table table : tables) {
             g.setColor(Color.decode("#6D6B5E"));
@@ -238,6 +321,11 @@ public class RestaurantMain extends JPanel {
         }
     }
 
+    /**
+     * Draws the head waiter as a purple circle with black border..
+     *
+     * @param g Graphics context for rendering
+     */
     static void drawHeadWaiter(Graphics g){
         g.setColor(Color.BLACK);
         g.fillOval(headWaiter.getX(), headWaiter.getY(), headWaiter.getDiameter(), headWaiter.getDiameter());
@@ -246,6 +334,11 @@ public class RestaurantMain extends JPanel {
         g.setColor(Color.BLACK);
     }
 
+    /**
+     * Draws all guests currently in the restaurant.
+     * Each guest is rendered as a colored circle with black border.*
+     * @param g Graphics context for rendering
+     */
     static void drawGuests(Graphics g){
         for (Guest guest: guestInstanceController.getGuests()){
             g.setColor(Color.BLACK);
@@ -256,6 +349,12 @@ public class RestaurantMain extends JPanel {
         }
     }
 
+    /**
+     * Draws all chef workstations as dark gray rectangles.
+     * Workstations represent the cooking areas where chefs perform their tasks.
+     *
+     * @param g Graphics context for rendering
+     */
     static void drawWorkstations(Graphics g) {
         for (ChefWorkstation workstation : workstationList) {
             g.setColor(Color.DARK_GRAY);
@@ -263,6 +362,12 @@ public class RestaurantMain extends JPanel {
         }
     }
 
+    /**
+     * Draws all waiters as white circles with black borders.
+     * Also displays the current action text above each waiter to show their current activity.
+     *
+     * @param g Graphics context for rendering
+     */
     static  void drawWaiters(Graphics g){
         for (Waiter waiter : waiters) {
             g.setColor(Color.BLACK);
@@ -274,6 +379,10 @@ public class RestaurantMain extends JPanel {
         }
     }
 
+    /**
+     * Draws the head chef as a blue circle with black border and "Head Chef" label.
+     * @param g Graphics context for rendering
+     */
     static void drawHeadChef(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillOval(headChef.getX(), headChef.getY(), headChef.getDiameter(), headChef.getDiameter()); // Draw circle with diameter of 50 pixels
@@ -283,6 +392,13 @@ public class RestaurantMain extends JPanel {
         g.drawString("Head Chef", headChef.getX()+30,  headChef.getY()+35);
     }
 
+    /**
+     * Draws all chefs including dish chefs and the prep chef.
+     * Chef type labels are displayed above each chef
+     * The prep chef is rendered separately with an orange color and "Prep" label.
+     *
+     * @param g Graphics context for rendering
+     */
     static void drawChefs(Graphics g){
         for(DishChef dishChef : dishChefList){
             g.setColor(Color.black);
