@@ -1,6 +1,6 @@
-Dish_price=3
-Amount_of_waiters=1
-Amount_of_tables=4
+Dish_price=5
+Amount_of_waiters=4
+Amount_of_tables=8
 Rows_of_tables=4
-Chef_speed=3
-Customers_per_table=4
+Chef_speed=5
+Customers_per_table=10

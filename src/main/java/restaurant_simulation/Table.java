@@ -119,6 +119,8 @@ public class Table extends CanvasObject implements WaiterPublisher, HeadWaiterPu
         }
 
         if (elapsedTime > automaticLeaveTime) {
+            System.out.println("Table "+ getTableNumber() + " - dishes received " + dishes.size());
+            System.out.println("Table "+ getTableNumber() + " - dishes ordered " + savedOrder.getDishes().size());
             System.out.println("Table: " + getTableNumber() + " - guests have to leave");
             makeGuestsLeave();
         }
